@@ -20,29 +20,23 @@ Target Language:
 
 Current version is target for `Java` language, but may be easy to port it to any other target.
 
-Commercial Use
+Commercial Support
 =====
 
-If you're interested in commercial use of this parser, contact me <alexandre.porcelli@gmail.com>.
+If you're interested in commercial support of this or any other parser, contact me <alexandre.porcelli@gmail.com>.
 
 License
 =====
 
-	(GNU Lesser General Public License v2.1)
+(The Apache License, Version 2.0)
 
-Copyright (c) 2009-2011, Alexandre Porcelli
+Copyright (c) 2010 Alexandre Porcelli [alexandre.porcelli@gmail.com]
 
-This copyrighted material is made available to anyone wishing to use, modify, copy, or redistribute it subject to the terms and conditions of the GNU Lesser General Public License, as published by the Free Software Foundation. 
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at:
 
-THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+     http://www.apache.org/licenses/LICENSE-2.0
 
-See the GNU Lesser General Public License for more details. 
-
-You should have received a copy of the GNU Lesser General Public License along with this distribution; if not, write to:
-
-	Free Software Foundation, Inc.
-	51 Franklin Street, Fifth Floor
-	Boston, MA  02110-1301  USA
+Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
 
 Legal and Trademarks
 =====
