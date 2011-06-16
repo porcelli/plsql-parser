@@ -43,6 +43,8 @@ tokens { // moved to the import vocabulary
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package br.com.porcelli.parser.plsql;
+
 import java.util.LinkedList;
 }
 
@@ -238,7 +240,7 @@ NOT_EQUAL_OP
 	:	'!='
 	|	'<>'
 	|	'^='
-	|	'Â='
+	|	'~='
 	;
 
 GREATER_THAN_OP
