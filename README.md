@@ -13,7 +13,7 @@ Issue Tracking
 Supported Version:
 =====
 
-* [ANTLR v3.2](http://jboss.org/hornetq)
+* [ANTLR v3.3](http://antlr.org)
 
 Target Language:
 -----
