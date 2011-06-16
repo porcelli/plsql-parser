@@ -49,7 +49,6 @@ import java.util.LinkedList;
 }
 
 @members {
-
 	// buffer (queue) to hold the emit()'d tokens
 	private LinkedList<Token> tokenBuffer = new LinkedList<Token>();
 

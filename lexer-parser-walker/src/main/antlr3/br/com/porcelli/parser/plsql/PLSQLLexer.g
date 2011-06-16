@@ -62,46 +62,50 @@ import java.util.LinkedList;
 		state.tokenStartLine = input.getLine();
 	}
 
+
 	/**
 	 * Return a token from this source; i.e., match a token on the char stream.
 	 */
-	public Token nextToken() {
-		while (true) {
-			if (tokenBuffer.size() == 0) {
-				state.token = null;
-				state.channel = Token.DEFAULT_CHANNEL;
-				state.tokenStartCharIndex = input.index();
-				state.tokenStartCharPositionInLine = input
-						.getCharPositionInLine();
-				state.tokenStartLine = input.getLine();
-				state.text = null;
-				if (input.LA(1) == CharStream.EOF) {
-					return Token.EOF_TOKEN;
-				}
-				try {
-					mTokens();
-					if (state.token == null) {
-						emit();
-					} else if (state.token == Token.SKIP_TOKEN) {
-						continue;
-					}
-				} catch (NoViableAltException nva) {
-					reportError(nva);
-					recover(nva); // throw out current char and try again
-				} catch (RecognitionException re) {
-					reportError(re);
-					// match() routine has already called recover()
-				}
-			} else {
-				Token result = tokenBuffer.poll();
-				if (result != Token.SKIP_TOKEN || result != null) { // discard
-					// SKIP
-					// tokens
-					return result;
-				}
-			}
-		}
-	}
+    public Token nextToken() {
+        while (true) {
+            if (tokenBuffer.size() == 0) {
+                state.token = null;
+                state.channel = Token.DEFAULT_CHANNEL;
+                state.tokenStartCharIndex = input.index();
+                state.tokenStartCharPositionInLine = input.getCharPositionInLine();
+                state.tokenStartLine = input.getLine();
+                state.text = null;
+                if (input.LA(1) == CharStream.EOF) {
+                    return Token.EOF_TOKEN;
+                }
+                try {
+                    int m = input.mark();
+                    state.backtracking = 1;
+                    state.failed = false;
+                    mTokens();
+                    state.backtracking = 0;
+
+                    if (state.failed) {
+                        input.rewind(m);
+                        input.consume();
+                    } else {
+                        emit();
+                    }
+                } catch (RecognitionException re) {
+                    // shouldn't happen in backtracking mode, but...
+                    reportError(re);
+                    recover(re);
+                }
+            } else {
+                Token result = tokenBuffer.poll();
+                if (result != Token.SKIP_TOKEN || result != null) { // discard
+                    // SKIP
+                    // tokens
+                    return result;
+                }
+            }
+        }
+    }
 }
 
 FOR_NOTATION
@@ -240,6 +244,7 @@ NOT_EQUAL_OP
 	:	'!='
 	|	'<>'
 	|	'^='
+	|	'~='
 	;
 
 GREATER_THAN_OP
