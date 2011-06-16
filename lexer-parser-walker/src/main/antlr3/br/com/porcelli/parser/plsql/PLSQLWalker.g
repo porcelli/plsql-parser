@@ -41,8 +41,8 @@ options {
  * limitations under the License.
  */
 package br.com.porcelli.parser.plsql;
-
 }
+
 compilation_unit
 	:	^(COMPILATION_UNIT unit_statement*)
 	;
