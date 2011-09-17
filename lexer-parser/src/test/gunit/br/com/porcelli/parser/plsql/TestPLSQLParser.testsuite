@@ -1686,6 +1686,9 @@ update_statement:
    set salary = 1.1 
    where department_id = 100 
    returning salary into :bnd1>>  OK
+<<update employees 
+   set salary = 1.1 
+   where current of c1>>  OK
 
 expression:
 "x( a , s, s)" OK

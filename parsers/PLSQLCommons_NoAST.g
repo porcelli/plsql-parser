@@ -53,7 +53,11 @@ alias_quoted_string
 	;
 
 where_clause
-	:	where_key condition_wrapper
+	:	where_key (current_of_clause|condition_wrapper)
+	;
+
+current_of_clause
+	:	current_key of_key cursor_name
 	;
 
 into_clause
