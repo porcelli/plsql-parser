@@ -732,6 +732,7 @@ fetch_statement:
 open_statement:
 "open c1" OK
 "open c1(a,b,c)" OK
+"open c1()" OK
 
 rollback_statement:
 "rollback" OK
@@ -832,6 +833,7 @@ open_for_statement:
 "open :emp_cv for select employee_id.* from employees" OK
 "open v_emp_cursor for v_stmt_str using 'manager'" OK
 "open v_emp_cursor for 'select employee_id.* from employees' using 'manager'" OK
+"open c1 for with t1 as ( select a ,b from t2 where d = 1 ) select a,b from t1" OK
 
 create_trigger:
 <<create trigger schema.trigger_name 

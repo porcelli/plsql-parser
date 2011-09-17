@@ -1270,7 +1270,7 @@ fetch_statement
 open_for_statement
 @init	{	int mode = 0;	}
 	:	open_key variable_name for_key
-	(	(select_key)=> select_statement {mode = 1;}
+	(	(select_key|with_key)=> select_statement {mode = 1;}
 	|	expression
 	)
 		using_clause?
