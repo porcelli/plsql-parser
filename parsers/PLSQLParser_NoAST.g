@@ -983,7 +983,7 @@ fetch_statement
 
 open_for_statement
 	:	open_key variable_name for_key
-	(	(select_key)=> select_statement
+	(	(select_key|with_key)=> select_statement
 	|	expression
 	)
 		using_clause?

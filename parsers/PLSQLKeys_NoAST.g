@@ -1209,7 +1209,7 @@ last_value_key
 	;
 
 current_key
-	:	{input.LT(1).getText().equalsIgnoreCase("current")}?=> REGULAR_ID
+	:	SQL92_RESERVED_CURRENT
 	;
 
 unbounded_key
