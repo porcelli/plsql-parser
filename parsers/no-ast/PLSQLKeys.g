@@ -1369,6 +1369,26 @@ defaults_key
     :    {input.LT(1).getText().equalsIgnoreCase("defaults")}?=> REGULAR_ID
     ;
 
+sqlerror_key
+    :    {input.LT(1).getText().equalsIgnoreCase("sqlerror")}? REGULAR_ID 
+    ;
+	
+oserror_key
+    :    {input.LT(1).getText().equalsIgnoreCase("oserror")}? REGULAR_ID 
+    ;
+
+success_key
+    :    {input.LT(1).getText().equalsIgnoreCase("success")}? REGULAR_ID 
+    ;
+
+warning_key
+    :    {input.LT(1).getText().equalsIgnoreCase("warning")}? REGULAR_ID 
+    ;
+
+failure_key
+    :    {input.LT(1).getText().equalsIgnoreCase("failure")}? REGULAR_ID 
+    ;
+
 insert_key
     :    SQL92_RESERVED_INSERT
     ;
@@ -2007,6 +2027,10 @@ hour_key:    {input.LT(1).getText().equalsIgnoreCase("hour")}? REGULAR_ID
 
 minute_key
     :    {input.LT(1).getText().equalsIgnoreCase("minute")}? REGULAR_ID
+    ;
+
+whenever_key
+    :    {input.LT(1).getText().equalsIgnoreCase("whenever")}? REGULAR_ID
     ;
 
 is_key

@@ -107,6 +107,7 @@
                                       <include>PLSQLCommons.g</include>
                                       <include>PLSQLKeys.g</include>
                                       <include>PLSQL_DMLParser.g</include>
+                                      <include>SQLPLUSParser.g</include>
                                     </includes>
                                 </resource>
                             </resources>
@@ -177,6 +178,7 @@
                                       <include>PLSQLCommons.g</include>
                                       <include>PLSQLKeys.g</include>
                                       <include>PLSQL_DMLParser.g</include>
+                                      <include>SQLPLUSParser.g</include>
                                     </includes>
                                 </resource>
                             </resources>
@@ -221,6 +223,7 @@
                                       <include>PLSQLCommons.g</include>
                                       <include>PLSQLKeys.g</include>
                                       <include>PLSQL_DMLParser.g</include>
+                                      <include>SQLPLUSParser.g</include>
                                     </includes>
                                 </resource>
                                 <resource>
