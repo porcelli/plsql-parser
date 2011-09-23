@@ -1,9 +1,9 @@
 About
 =====
 
-This is a full parser for PL/SQL language that includes a Lexer, Parser (that optionally generates an Abstract Syntax Tree) and a TreeWalker.
+This is a [almost] full parser for PL/SQL language that includes a Lexer, Parser (that optionally generates an Abstract Syntax Tree) and a TreeWalker.
 
-**Note:** This parser fully supports the 11g version.
+**Note:** This parser supports 11g version.
 
 Issue Tracking
 =====

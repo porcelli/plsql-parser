@@ -18,6 +18,8 @@
 
 gunit PLSQL;
 
+@header { package br.com.porcelli.parser.plsql; }
+
 group_by_clause:
 "group by country_name,prod_name,calendar_year" OK
 

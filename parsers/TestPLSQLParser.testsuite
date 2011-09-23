@@ -18,6 +18,8 @@
 
 gunit PLSQL;
 
+@header { package br.com.porcelli.parser.plsql; }
+
 compilation_unit:
 "" OK
 

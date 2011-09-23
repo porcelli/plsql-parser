@@ -43,7 +43,6 @@ tokens { // moved to the import vocabulary
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package br.com.porcelli.parser.plsql;
 
 import java.util.LinkedList;
@@ -63,6 +62,7 @@ import java.util.LinkedList;
         state.tokenStartLine = input.getLine();
     }
 
+
     /**
      * Return a token from this source; i.e., match a token on the char stream.
      */
@@ -72,26 +72,29 @@ import java.util.LinkedList;
                 state.token = null;
                 state.channel = Token.DEFAULT_CHANNEL;
                 state.tokenStartCharIndex = input.index();
-                state.tokenStartCharPositionInLine = input
-                        .getCharPositionInLine();
+                state.tokenStartCharPositionInLine = input.getCharPositionInLine();
                 state.tokenStartLine = input.getLine();
                 state.text = null;
                 if (input.LA(1) == CharStream.EOF) {
                     return Token.EOF_TOKEN;
                 }
                 try {
+                    int m = input.mark();
+                    state.backtracking = 1;
+                    state.failed = false;
                     mTokens();
-                    if (state.token == null) {
+                    state.backtracking = 0;
+
+                    if (state.failed) {
+                        input.rewind(m);
+                        input.consume();
+                    } else {
                         emit();
-                    } else if (state.token == Token.SKIP_TOKEN) {
-                        continue;
                     }
-                } catch (NoViableAltException nva) {
-                    reportError(nva);
-                    recover(nva); // throw out current char and try again
                 } catch (RecognitionException re) {
+                    // shouldn't happen in backtracking mode, but...
                     reportError(re);
-                    // match() routine has already called recover()
+                    recover(re);
                 }
             } else {
                 Token result = tokenBuffer.poll();
@@ -241,7 +244,7 @@ NOT_EQUAL_OP
     :    '!='
     |    '<>'
     |    '^='
-    |    'Â='
+    |    '~='
     ;
 
 GREATER_THAN_OP

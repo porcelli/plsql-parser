@@ -1,6 +1,5 @@
 <?xml version="1.0"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>br.com.porcelli.parser</groupId>
     <artifactId>plsql</artifactId>
@@ -65,14 +64,6 @@
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-resources-plugin</artifactId>
-                <version>2.4.2</version>
-                <configuration>
-                    <encoding>${project.build.sourceEncoding}</encoding>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>2.3.2</version>
                 <configuration>
@@ -90,6 +81,188 @@
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
                 <version>1.2</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>2.5</version>
+                <configuration>
+                    <encoding>${project.build.sourceEncoding}</encoding>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>lexer-parser-copy-resources-imports</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <overwrite>true</overwrite>
+                            <outputDirectory>${basedir}/lexer-parser/src/main/antlr3/br/com/porcelli/parser/plsql/imports</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${basedir}/parsers/no-ast/</directory>
+                                    <filtering>true</filtering>
+                                    <includes>
+                                      <include>PLSQLCommons.g</include>
+                                      <include>PLSQLKeys.g</include>
+                                      <include>PLSQL_DMLParser.g</include>
+                                    </includes>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>lexer-parser-copy-resources-parser-lexer</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <overwrite>true</overwrite>
+                            <outputDirectory>${basedir}/lexer-parser/src/main/antlr3/br/com/porcelli/parser/plsql</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${basedir}/parsers/no-ast/</directory>
+                                    <filtering>true</filtering>
+                                    <includes>
+                                      <include>PLSQLParser.g</include>
+                                    </includes>
+                                </resource>
+                                <resource>
+                                    <directory>${basedir}/parsers/</directory>
+                                    <filtering>true</filtering>
+                                    <includes>
+                                      <include>PLSQLLexer.g</include>
+                                    </includes>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>lexer-parser-copy-resources-gunits</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <overwrite>true</overwrite>
+                            <outputDirectory>${basedir}/lexer-parser/src/test/gunit/br/com/porcelli/parser/plsql</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${basedir}/parsers/</directory>
+                                    <filtering>true</filtering>
+                                    <includes>
+                                      <include>TestPLSQL_DML.testsuite</include>
+                                      <include>TestPLSQLParser.testsuite</include>
+                                    </includes>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>lexer-parser-walker-copy-resources-imports</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <overwrite>true</overwrite>
+                            <outputDirectory>${basedir}/lexer-parser-walker/src/main/antlr3/br/com/porcelli/parser/plsql/imports</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${basedir}/parsers/</directory>
+                                    <filtering>true</filtering>
+                                    <includes>
+                                      <include>PLSQLCommons.g</include>
+                                      <include>PLSQLKeys.g</include>
+                                      <include>PLSQL_DMLParser.g</include>
+                                    </includes>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>lexer-parser-walker-copy-resources-parser-lexer-walker</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <overwrite>true</overwrite>
+                            <outputDirectory>${basedir}/lexer-parser-walker/src/main/antlr3/br/com/porcelli/parser/plsql</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${basedir}/parsers/</directory>
+                                    <filtering>true</filtering>
+                                    <includes>
+                                      <include>PLSQLLexer.g</include>
+                                      <include>PLSQLParser.g</include>
+                                      <include>PLSQLWalker.g</include>
+                                    </includes>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>lexer-parser-walker-composed-copy-resources-imports</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <overwrite>true</overwrite>
+                            <outputDirectory>${basedir}/lexer-parser-walker-composed/src/main/antlr3/br/com/porcelli/parser/plsql/imports</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${basedir}/parsers/</directory>
+                                    <filtering>true</filtering>
+                                    <includes>
+                                      <include>PLSQLCommons.g</include>
+                                      <include>PLSQLKeys.g</include>
+                                      <include>PLSQL_DMLParser.g</include>
+                                    </includes>
+                                </resource>
+                                <resource>
+                                    <directory>${basedir}/parsers/walker-composed</directory>
+                                    <filtering>true</filtering>
+                                    <includes>
+                                      <include>PLSQL_DMLWalker.g</include>
+                                      <include>PLSQLCommonsWalker.g</include>
+                                    </includes>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>lexer-parser-walker-composed-copy-resources-parser-lexer-walker</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <overwrite>true</overwrite>
+                            <outputDirectory>${basedir}/lexer-parser-walker-composed/src/main/antlr3/br/com/porcelli/parser/plsql</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${basedir}/parsers/</directory>
+                                    <filtering>true</filtering>
+                                    <includes>
+                                      <include>PLSQLLexer.g</include>
+                                      <include>PLSQLParser.g</include>
+                                    </includes>
+                                </resource>
+                                <resource>
+                                    <directory>${basedir}/parsers/walker-composed</directory>
+                                    <filtering>true</filtering>
+                                    <includes>
+                                      <include>PLSQLWalker.g</include>
+                                    </includes>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
