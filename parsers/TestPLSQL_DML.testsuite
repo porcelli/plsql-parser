@@ -122,9 +122,9 @@ order by a.department_id>>  OK
    model dimension by (country, year) 
          measures (sale, 0 csum) 
          rules 
-		    (
-		      s['standard mouse'] = 2 
-		    )
+            (
+              s['standard mouse'] = 2 
+            )
    order by country, year>>  OK
 <<select e.employee_id, e.salary, e.commission_pct 
    from employees e, departments d 
@@ -270,7 +270,7 @@ select e,f,g from table_2
 select*from table_3
  union 
 select*from table_4>>
-	OK
+    OK
 "select a,b into :VarA,:FrmA.FieldB,: _WIN12503 cc from table_1" OK
 
 "select A from (select B from (select C from d) cross join table_b b)" OK
