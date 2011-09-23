@@ -18,11 +18,11 @@
 lexer grammar PLSQLLexer;
 
 tokens { // moved to the import vocabulary
-	UNSIGNED_INTEGER; // Imaginary token based on subtoken typecasting - see the rule <EXACT_NUM_LIT>
-	APPROXIMATE_NUM_LIT; // Imaginary token based on subtoken typecasting - see the rule <EXACT_NUM_LIT>
-	MINUS_SIGN; // Imaginary token based on subtoken typecasting - see the rule <SEPARATOR>
-	DOUBLE_PERIOD;
-	UNDERSCORE; // Imaginary token based on subtoken typecasting - see the rule <INTRODUCER>
+    UNSIGNED_INTEGER; // Imaginary token based on subtoken typecasting - see the rule <EXACT_NUM_LIT>
+    APPROXIMATE_NUM_LIT; // Imaginary token based on subtoken typecasting - see the rule <EXACT_NUM_LIT>
+    MINUS_SIGN; // Imaginary token based on subtoken typecasting - see the rule <SEPARATOR>
+    DOUBLE_PERIOD;
+    UNDERSCORE; // Imaginary token based on subtoken typecasting - see the rule <INTRODUCER>
 }
 
 @header {
@@ -50,100 +50,100 @@ import java.util.LinkedList;
 }
 
 @members {
-	// buffer (queue) to hold the emit()'d tokens
-	private LinkedList<Token> tokenBuffer = new LinkedList<Token>();
+    // buffer (queue) to hold the emit()'d tokens
+    private LinkedList<Token> tokenBuffer = new LinkedList<Token>();
 
-	public void emit(Token t) {
-		tokenBuffer.add(t);
-	}
+    public void emit(Token t) {
+        tokenBuffer.add(t);
+    }
 
-	private void advanceInput(){
-		state.tokenStartCharIndex = input.index();
-		state.tokenStartCharPositionInLine = input.getCharPositionInLine();
-		state.tokenStartLine = input.getLine();
-	}
+    private void advanceInput(){
+        state.tokenStartCharIndex = input.index();
+        state.tokenStartCharPositionInLine = input.getCharPositionInLine();
+        state.tokenStartLine = input.getLine();
+    }
 
-	/**
-	 * Return a token from this source; i.e., match a token on the char stream.
-	 */
-	public Token nextToken() {
-		while (true) {
-			if (tokenBuffer.size() == 0) {
-				state.token = null;
-				state.channel = Token.DEFAULT_CHANNEL;
-				state.tokenStartCharIndex = input.index();
-				state.tokenStartCharPositionInLine = input
-						.getCharPositionInLine();
-				state.tokenStartLine = input.getLine();
-				state.text = null;
-				if (input.LA(1) == CharStream.EOF) {
-					return Token.EOF_TOKEN;
-				}
-				try {
-					mTokens();
-					if (state.token == null) {
-						emit();
-					} else if (state.token == Token.SKIP_TOKEN) {
-						continue;
-					}
-				} catch (NoViableAltException nva) {
-					reportError(nva);
-					recover(nva); // throw out current char and try again
-				} catch (RecognitionException re) {
-					reportError(re);
-					// match() routine has already called recover()
-				}
-			} else {
-				Token result = tokenBuffer.poll();
-				if (result != Token.SKIP_TOKEN || result != null) { // discard
-					// SKIP
-					// tokens
-					return result;
-				}
-			}
-		}
-	}
+    /**
+     * Return a token from this source; i.e., match a token on the char stream.
+     */
+    public Token nextToken() {
+        while (true) {
+            if (tokenBuffer.size() == 0) {
+                state.token = null;
+                state.channel = Token.DEFAULT_CHANNEL;
+                state.tokenStartCharIndex = input.index();
+                state.tokenStartCharPositionInLine = input
+                        .getCharPositionInLine();
+                state.tokenStartLine = input.getLine();
+                state.text = null;
+                if (input.LA(1) == CharStream.EOF) {
+                    return Token.EOF_TOKEN;
+                }
+                try {
+                    mTokens();
+                    if (state.token == null) {
+                        emit();
+                    } else if (state.token == Token.SKIP_TOKEN) {
+                        continue;
+                    }
+                } catch (NoViableAltException nva) {
+                    reportError(nva);
+                    recover(nva); // throw out current char and try again
+                } catch (RecognitionException re) {
+                    reportError(re);
+                    // match() routine has already called recover()
+                }
+            } else {
+                Token result = tokenBuffer.poll();
+                if (result != Token.SKIP_TOKEN || result != null) { // discard
+                    // SKIP
+                    // tokens
+                    return result;
+                }
+            }
+        }
+    }
 }
 
 FOR_NOTATION
-	:	UNSIGNED_INTEGER
-		{state.type = UNSIGNED_INTEGER; emit(); advanceInput();}
-		'..'
-		{state.type = DOUBLE_PERIOD; emit(); advanceInput();}
-		UNSIGNED_INTEGER
-		{state.type = UNSIGNED_INTEGER; emit(); advanceInput(); $channel=HIDDEN;}
-	;
+    :    UNSIGNED_INTEGER
+        {state.type = UNSIGNED_INTEGER; emit(); advanceInput();}
+        '..'
+        {state.type = DOUBLE_PERIOD; emit(); advanceInput();}
+        UNSIGNED_INTEGER
+        {state.type = UNSIGNED_INTEGER; emit(); advanceInput(); $channel=HIDDEN;}
+    ;
 
 //{ Rule #358 <NATIONAL_CHAR_STRING_LIT> - subtoken typecast in <REGULAR_ID>, it also incorporates <character_representation>
 //  Lowercase 'n' is a usual addition to the standard
 NATIONAL_CHAR_STRING_LIT
-	:	('N' | 'n') '\'' (options{greedy=true;}: ~('\'' | '\r' | '\n' ) | '\'' '\'' | NEWLINE)* '\''
-	;
+    :    ('N' | 'n') '\'' (options{greedy=true;}: ~('\'' | '\r' | '\n' ) | '\'' '\'' | NEWLINE)* '\''
+    ;
 //}
 
 //{ Rule #040 <BIT_STRING_LIT> - subtoken typecast in <REGULAR_ID>
 //  Lowercase 'b' is a usual addition to the standard
 BIT_STRING_LIT
-	:	('B' | 'b') ('\'' ('0' | '1')* '\'' SEPARATOR? )+
-	;
+    :    ('B' | 'b') ('\'' ('0' | '1')* '\'' SEPARATOR? )+
+    ;
 //}
 
 
 //{ Rule #284 <HEX_STRING_LIT> - subtoken typecast in <REGULAR_ID>
 //  Lowercase 'x' is a usual addition to the standard
 HEX_STRING_LIT
-	:	('X' | 'x') ('\'' ('a'..'f' | 'A'..'F' | '0'..'9')* '\'' SEPARATOR? )+ 
-	;
+    :    ('X' | 'x') ('\'' ('a'..'f' | 'A'..'F' | '0'..'9')* '\'' SEPARATOR? )+ 
+    ;
 //}
 
 PERIOD
-	:	'.' 
-	{	if ((char) input.LA(1) == '.') {
-			input.consume();
-			$type = DOUBLE_PERIOD;
-		}
-	}
-	;
+    :    '.' 
+    {    if ((char) input.LA(1) == '.') {
+            input.consume();
+            $type = DOUBLE_PERIOD;
+        }
+    }
+    ;
 
 //{ Rule #238 <EXACT_NUM_LIT> 
 //  This rule is a bit tricky - it resolves the ambiguity with <PERIOD> 
@@ -151,187 +151,187 @@ PERIOD
 //  Rule #501 <signed_integer> was incorporated directly in the token <APPROXIMATE_NUM_LIT>
 //  See also the rule #617 <unsigned_num_lit>
 EXACT_NUM_LIT
-	:	UNSIGNED_INTEGER
-			( '.' UNSIGNED_INTEGER
-			|	{$type = UNSIGNED_INTEGER;}
-			) ( ('E' | 'e') ('+' | '-')? UNSIGNED_INTEGER {$type = APPROXIMATE_NUM_LIT;} )?
-	|	'.' UNSIGNED_INTEGER ( ('E' | 'e') ('+' | '-')? UNSIGNED_INTEGER {$type = APPROXIMATE_NUM_LIT;} )?
-	;
+    :    UNSIGNED_INTEGER
+            ( '.' UNSIGNED_INTEGER
+            |    {$type = UNSIGNED_INTEGER;}
+            ) ( ('E' | 'e') ('+' | '-')? UNSIGNED_INTEGER {$type = APPROXIMATE_NUM_LIT;} )?
+    |    '.' UNSIGNED_INTEGER ( ('E' | 'e') ('+' | '-')? UNSIGNED_INTEGER {$type = APPROXIMATE_NUM_LIT;} )?
+    ;
 //}
 
 //{ Rule #--- <CHAR_STRING> is a base for Rule #065 <char_string_lit> , it incorporates <character_representation>
 //  and a superfluous subtoken typecasting of the "QUOTE"
 CHAR_STRING
-	:	'\'' (options{greedy=true;}: ~('\'' | '\r' | '\n') | '\'' '\'' | NEWLINE)* '\''
-	;
+    :    '\'' (options{greedy=true;}: ~('\'' | '\r' | '\n') | '\'' '\'' | NEWLINE)* '\''
+    ;
 //}
 
 //{ Rule #163 <DELIMITED_ID>
 DELIMITED_ID
-	:	'"' (~('"' | '\r' | '\n') | '"' '"')+ '"' 
-	;
+    :    '"' (~('"' | '\r' | '\n') | '"' '"')+ '"' 
+    ;
 //}
 
 //{ Rule #546 <SQL_SPECIAL_CHAR> was split into single rules
 PERCENT
-	:	'%'
-	;
+    :    '%'
+    ;
 
 AMPERSAND
-	:	'&'
-	;
+    :    '&'
+    ;
 
 LEFT_PAREN
-	:	'('
-	;
+    :    '('
+    ;
 
 RIGHT_PAREN
-	:	')'
-	;
+    :    ')'
+    ;
 
 DOUBLE_ASTERISK
-	:	'**'
-	;
+    :    '**'
+    ;
 
 ASTERISK
-	:	'*'
-	;
+    :    '*'
+    ;
 
 PLUS_SIGN
-	:	'+'
-	;
+    :    '+'
+    ;
 
 COMMA
-	:	','
-	;
+    :    ','
+    ;
 
 SOLIDUS
-	:	'/'
-	; 
+    :    '/'
+    ; 
 
 AT_SIGN
-	:	'@'
-	;
+    :    '@'
+    ;
 
 ASSIGN_OP
-	:	':='
-	;
+    :    ':='
+    ;
 
 COLON
-	:	':'
-	;
+    :    ':'
+    ;
 
 SEMICOLON
-	:	';'
-	;
+    :    ';'
+    ;
 
 LESS_THAN_OR_EQUALS_OP
-	:	'<='
-	;
+    :    '<='
+    ;
 
 LESS_THAN_OP
-	:	'<'
-	;
+    :    '<'
+    ;
 
 GREATER_THAN_OR_EQUALS_OP
-	:	'>='
-	;
+    :    '>='
+    ;
 
 NOT_EQUAL_OP
-	:	'!='
-	|	'<>'
-	|	'^='
-	|	'Â='
-	;
+    :    '!='
+    |    '<>'
+    |    '^='
+    |    'Â='
+    ;
 
 GREATER_THAN_OP
-	:	'>'
-	;
+    :    '>'
+    ;
 
 QUESTION_MARK
-	:	'?'
-	;
+    :    '?'
+    ;
 
 // protected UNDERSCORE : '_' SEPARATOR ; // subtoken typecast within <INTRODUCER>
 CONCATENATION_OP
-	:	'||'
-	;
+    :    '||'
+    ;
 
 VERTICAL_BAR
-	:	'|'
-	;
+    :    '|'
+    ;
 
 EQUALS_OP
-	:	'='
-	;
+    :    '='
+    ;
 
 //{ Rule #532 <SQL_EMBDD_LANGUAGE_CHAR> was split into single rules:
 LEFT_BRACKET
-	:	'['
-	;
+    :    '['
+    ;
 
 RIGHT_BRACKET
-	:	']'
-	;
+    :    ']'
+    ;
 
 //}
 
 //{ Rule #319 <INTRODUCER>
 INTRODUCER
-	:	'_' (SEPARATOR {$type = UNDERSCORE;})?
-	;
+    :    '_' (SEPARATOR {$type = UNDERSCORE;})?
+    ;
 
 //{ Rule #479 <SEPARATOR>
 //  It was originally a protected rule set to be filtered out but the <COMMENT> and <MINUS_SIGN> clashed. 
 SEPARATOR
-	:	'-' {$type = MINUS_SIGN;}
-	|	COMMENT { $channel=HIDDEN; }
-	|	(SPACE | NEWLINE)+ { $channel=HIDDEN; }
-	;
+    :    '-' {$type = MINUS_SIGN;}
+    |    COMMENT { $channel=HIDDEN; }
+    |    (SPACE | NEWLINE)+ { $channel=HIDDEN; }
+    ;
 //}
 
 //{ Rule #504 <SIMPLE_LETTER> - simple_latin _letter was generalised into SIMPLE_LETTER
 //  Unicode is yet to be implemented - see NSF0
 fragment
 SIMPLE_LETTER
-	:	'a'..'z'
-	|	'A'..'Z'
-	;
+    :    'a'..'z'
+    |    'A'..'Z'
+    ;
 //}
 
 //  Rule #176 <DIGIT> was incorporated by <UNSIGNED_INTEGER> 
 //{ Rule #615 <UNSIGNED_INTEGER> - subtoken typecast in <EXACT_NUM_LIT> 
 fragment
 UNSIGNED_INTEGER
-	:	('0'..'9')+ 
-	;
+    :    ('0'..'9')+ 
+    ;
 //}
 
 //{ Rule #097 <COMMENT>
 fragment
 COMMENT
-	:	'--' ( ~('\r' | '\n') )* (NEWLINE|EOF)
-	|	'/*' (options{greedy=false;} : .)* '*/'
-	;
+    :    '--' ( ~('\r' | '\n') )* (NEWLINE|EOF)
+    |    '/*' (options{greedy=false;} : .)* '*/'
+    ;
 //}
 
 //{ Rule #360 <NEWLINE>
 fragment
 NEWLINE
-	:	'\r' (options{greedy=true;}: '\n')?
-	|	'\n'
-	;
+    :    '\r' (options{greedy=true;}: '\n')?
+    |    '\n'
+    ;
 //}
 
 //{ Rule #522 <SPACE>
 fragment
-SPACE	:	' '
-	|	'\t'
-	;
+SPACE    :    ' '
+    |    '\t'
+    ;
 //}
 
 fragment APPROXIMATE_NUM_LIT: ;
-fragment MINUS_SIGN: ;	
+fragment MINUS_SIGN: ;    
 fragment UNDERSCORE: ;
 fragment DOUBLE_PERIOD: ;
 
@@ -339,363 +339,363 @@ fragment DOUBLE_PERIOD: ;
 //  Within testLiterals all reserved and non-reserved words are being resolved
 
 SQL92_RESERVED_ALL
-	:	'all'
-	;
+    :    'all'
+    ;
 
 SQL92_RESERVED_ALTER
-	:	'alter'
-	;
+    :    'alter'
+    ;
 
 SQL92_RESERVED_AND
-	:	'and'
-	;
+    :    'and'
+    ;
 
 SQL92_RESERVED_ANY
-	:	'any'
-	;
+    :    'any'
+    ;
 
 SQL92_RESERVED_AS
-	:	'as'
-	;
+    :    'as'
+    ;
 
 SQL92_RESERVED_ASC
-	:	'asc'
-	;
+    :    'asc'
+    ;
 
 SQL92_RESERVED_AT
-	:	'at'
-	;
+    :    'at'
+    ;
 
 SQL92_RESERVED_BEGIN
-	:	'begin'
-	;
+    :    'begin'
+    ;
 
 SQL92_RESERVED_BETWEEN
-	:	'between'
-	;
+    :    'between'
+    ;
 
 SQL92_RESERVED_BY
-	:	'by'
-	;
+    :    'by'
+    ;
 
 SQL92_RESERVED_CASE
-	:	'case'
-	;
+    :    'case'
+    ;
 
 SQL92_RESERVED_CHECK
-	:	'check'
-	;
+    :    'check'
+    ;
 
 PLSQL_RESERVED_CLUSTERS
-	:	'clusters'
-	;
+    :    'clusters'
+    ;
 
 PLSQL_RESERVED_COLAUTH
-	:	'colauth'
-	;
+    :    'colauth'
+    ;
 
 PLSQL_RESERVED_COLUMNS
-	:	'columns'
-	;
+    :    'columns'
+    ;
 
 PLSQL_RESERVED_COMPRESS
-	:	'compress'
-	;
+    :    'compress'
+    ;
 
 SQL92_RESERVED_CONNECT
-	:	'connect'
-	;
+    :    'connect'
+    ;
 
 PLSQL_RESERVED_CRASH
-	:	'crash'
-	;
+    :    'crash'
+    ;
 
 SQL92_RESERVED_CREATE
-	:	'create'
-	;
+    :    'create'
+    ;
 
 SQL92_RESERVED_CURRENT
-	:	'current'
-	;
+    :    'current'
+    ;
 
 SQL92_RESERVED_DECLARE
-	:	'declare'
-	;
+    :    'declare'
+    ;
 
 SQL92_RESERVED_DEFAULT
-	:	'default'
-	;
+    :    'default'
+    ;
 
 SQL92_RESERVED_DELETE
-	:	'delete'
-	;
+    :    'delete'
+    ;
 
 SQL92_RESERVED_DESC
-	:	'desc'
-	;
+    :    'desc'
+    ;
 
 SQL92_RESERVED_DISTINCT
-	:	'distinct'
-	;
+    :    'distinct'
+    ;
 
 SQL92_RESERVED_DROP
-	:	'drop'
-	;
+    :    'drop'
+    ;
 
 SQL92_RESERVED_ELSE
-	:	'else'
-	;
+    :    'else'
+    ;
 
 SQL92_RESERVED_END
-	:	'end'
-	;
+    :    'end'
+    ;
 
 SQL92_RESERVED_EXCEPTION
-	:	'exception'
-	;
+    :    'exception'
+    ;
 
 PLSQL_RESERVED_EXCLUSIVE
-	:	'exclusive'
-	;
+    :    'exclusive'
+    ;
 
 SQL92_RESERVED_EXISTS
-	:	'exists'
-	;
+    :    'exists'
+    ;
 
 SQL92_RESERVED_FALSE
-	:	'false'
-	;
+    :    'false'
+    ;
 
 SQL92_RESERVED_FETCH
-	:	'fetch'
-	;
+    :    'fetch'
+    ;
 
 SQL92_RESERVED_FOR
-	:	'for'
-	;
+    :    'for'
+    ;
 
 SQL92_RESERVED_FROM
-	:	'from'
-	;
+    :    'from'
+    ;
 
 SQL92_RESERVED_GOTO
-	:	'goto'
-	;
+    :    'goto'
+    ;
 
 SQL92_RESERVED_GRANT
-	:	'grant'
-	;
+    :    'grant'
+    ;
 
 SQL92_RESERVED_GROUP
-	:	'group'
-	;
+    :    'group'
+    ;
 
 SQL92_RESERVED_HAVING
-	:	'having'
-	;
+    :    'having'
+    ;
 
 PLSQL_RESERVED_IDENTIFIED
-	:	'identified'
-	;
+    :    'identified'
+    ;
 
 PLSQL_RESERVED_IF
-	:	'if'
-	;
+    :    'if'
+    ;
 
 SQL92_RESERVED_IN
-	:	'in'
-	;
+    :    'in'
+    ;
 
 PLSQL_RESERVED_INDEX
-	:	'index'
-	;
+    :    'index'
+    ;
 
 PLSQL_RESERVED_INDEXES
-	:	'indexes'
-	;
+    :    'indexes'
+    ;
 
 SQL92_RESERVED_INSERT
-	:	'insert'
-	;
+    :    'insert'
+    ;
 
 SQL92_RESERVED_INTERSECT
-	:	'intersect'
-	;
+    :    'intersect'
+    ;
 
 SQL92_RESERVED_INTO
-	:	'into'
-	;
+    :    'into'
+    ;
 
 SQL92_RESERVED_IS
-	:	'is'
-	;
+    :    'is'
+    ;
 
 SQL92_RESERVED_LIKE
-	:	'like'
-	;
+    :    'like'
+    ;
 
 PLSQL_RESERVED_LOCK
-	:	'lock'
-	;
+    :    'lock'
+    ;
 
 PLSQL_RESERVED_MINUS
-	:	'minus'
-	;
+    :    'minus'
+    ;
 
 PLSQL_RESERVED_MODE
-	:	'mode'
-	;
+    :    'mode'
+    ;
 
 PLSQL_RESERVED_NOCOMPRESS
-	:	'nocompress'
-	;
+    :    'nocompress'
+    ;
 
 SQL92_RESERVED_NOT
-	:	'not'
-	;
+    :    'not'
+    ;
 
 PLSQL_RESERVED_NOWAIT
-	:	'nowait'
-	;
+    :    'nowait'
+    ;
 
 SQL92_RESERVED_NULL
-	:	'null'
-	;
+    :    'null'
+    ;
 
 SQL92_RESERVED_OF
-	:	'of'
-	;
+    :    'of'
+    ;
 
 SQL92_RESERVED_ON
-	:	'on'
-	;
+    :    'on'
+    ;
 
 SQL92_RESERVED_OPTION
-	:	'option'
-	;
+    :    'option'
+    ;
 
 SQL92_RESERVED_OR
-	:	'or'
-	;
+    :    'or'
+    ;
 
 SQL92_RESERVED_ORDER
-	:	'order'
-	;
+    :    'order'
+    ;
 
 SQL92_RESERVED_OVERLAPS
-	:	'overlaps'
-	;
+    :    'overlaps'
+    ;
 
 SQL92_RESERVED_PRIOR
-	:	'prior'
-	;
+    :    'prior'
+    ;
 
 SQL92_RESERVED_PROCEDURE
-	:	'procedure'
-	;
+    :    'procedure'
+    ;
 
 SQL92_RESERVED_PUBLIC
-	:	'public'
-	;
+    :    'public'
+    ;
 
 PLSQL_RESERVED_RESOURCE
-	:	'resource'
-	;
+    :    'resource'
+    ;
 
 SQL92_RESERVED_REVOKE
-	:	'revoke'
-	;
+    :    'revoke'
+    ;
 
 SQL92_RESERVED_SELECT
-	:	'select'
-	;
+    :    'select'
+    ;
 
 PLSQL_RESERVED_SHARE
-	:	'share'
-	;
+    :    'share'
+    ;
 
 SQL92_RESERVED_SIZE
-	:	'size'
-	;
+    :    'size'
+    ;
 
 SQL92_RESERVED_SQL
-	:	'sql'
-	;
+    :    'sql'
+    ;
 
 PLSQL_RESERVED_START
-	:	'start'
-	;
+    :    'start'
+    ;
 
 PLSQL_RESERVED_TABAUTH
-	:	'tabauth'
-	;
+    :    'tabauth'
+    ;
 
 SQL92_RESERVED_TABLE
-	:	'table'
-	;
+    :    'table'
+    ;
 
 SQL92_RESERVED_THEN
-	:	'then'
-	;
+    :    'then'
+    ;
 
 SQL92_RESERVED_TO
-	:	'to'
-	;
+    :    'to'
+    ;
 
 SQL92_RESERVED_TRUE
-	:	'true'
-	;
+    :    'true'
+    ;
 
 SQL92_RESERVED_UNION
-	:	'union'
-	;
+    :    'union'
+    ;
 
 SQL92_RESERVED_UNIQUE
-	:	'unique'
-	;
+    :    'unique'
+    ;
 
 SQL92_RESERVED_UPDATE
-	:	'update'
-	;
+    :    'update'
+    ;
 
 SQL92_RESERVED_VALUES
-	:	'values'
-	;
+    :    'values'
+    ;
 
 SQL92_RESERVED_VIEW
-	:	'view'
-	;
+    :    'view'
+    ;
 
 PLSQL_RESERVED_VIEWS
-	:	'views'
-	;
+    :    'views'
+    ;
 
 SQL92_RESERVED_WHEN
-	:	'when'
-	;
+    :    'when'
+    ;
 
 SQL92_RESERVED_WHERE
-	:	'where'
-	;
+    :    'where'
+    ;
 
 SQL92_RESERVED_WITH
-	:	'with'
-	;
+    :    'with'
+    ;
 
 PLSQL_NON_RESERVED_USING
-	:	'using'
-	;
+    :    'using'
+    ;
 
 PLSQL_NON_RESERVED_MODEL
-	:	'model'
-	;
+    :    'model'
+    ;
 
 PLSQL_NON_RESERVED_ELSIF
-	:	'elsif'
-	;
+    :    'elsif'
+    ;
 
 REGULAR_ID
-	:	(SIMPLE_LETTER) (SIMPLE_LETTER | '_' | '0'..'9')*
-	;
+    :    (SIMPLE_LETTER) (SIMPLE_LETTER | '_' | '0'..'9')*
+    ;
 
 // disambiguate these
