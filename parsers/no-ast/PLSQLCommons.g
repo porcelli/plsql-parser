@@ -123,6 +123,10 @@ type_name
     :    id_expression ((PERIOD id_expression)=> PERIOD id_expression)*
     ;
 
+sequence_name
+    :    id_expression ((PERIOD id_expression)=> PERIOD id_expression)*
+    ;
+
 exception_name
     :    id ((PERIOD id_expression)=> PERIOD id_expression)* 
     ;

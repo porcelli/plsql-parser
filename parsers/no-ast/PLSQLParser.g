@@ -65,8 +65,10 @@ backtrack=true;
 }    :    alter_function
     |    alter_package
     |    alter_procedure
+    |    alter_sequence
     |    alter_trigger
     |    alter_type
+
     |    create_function_body
     |    create_procedure_body
     |    create_package
@@ -77,11 +79,14 @@ backtrack=true;
 //    |    create_directory //TODO
 //    |    create_materialized_view //TODO
 
+    |    create_sequence
     |    create_trigger
     |    create_type
+
     |    drop_function
     |    drop_package
     |    drop_procedure
+    |    drop_sequence
     |    drop_trigger
     |    drop_type
     ;
@@ -606,6 +611,48 @@ pragma_elements
 
 type_elements_parameter
     :    parameter_name type_spec
+    ;
+
+// $>
+// $>
+
+// $<Sequence DDLs
+
+drop_sequence
+    :   drop_key sequence_key sequence_name
+        SEMICOLON
+    ;
+
+alter_sequence
+    :    alter_key sequence_key sequence_name sequence_spec+
+         SEMICOLON
+    ;
+
+create_sequence
+    :    create_key sequence_key sequence_name
+    (    sequence_start_clause
+    |    sequence_spec
+    )*   SEMICOLON
+    ;
+
+// $<Common Sequence
+
+sequence_spec
+    :    increment_key by_key UNSIGNED_INTEGER
+    |    maxvalue_key UNSIGNED_INTEGER
+    |    nomaxvalue_key
+    |    minvalue_key UNSIGNED_INTEGER
+    |    nominvalue_key
+    |    cycle_key
+    |    nocycle_key
+    |    cache_key UNSIGNED_INTEGER
+    |    nocache_key
+    |    order_key
+    |    noorder_key
+    ;
+
+sequence_start_clause
+    :    start_key with_key UNSIGNED_INTEGER
     ;
 
 // $>

@@ -2110,3 +2110,31 @@ from_key
 where_key
     :    SQL92_RESERVED_WHERE
     ;
+
+sequence_key
+    :   {input.LT(1).getText().equalsIgnoreCase("sequence")}? REGULAR_ID
+    ;
+
+noorder_key
+    :   {input.LT(1).getText().equalsIgnoreCase("noorder")}? REGULAR_ID
+    ;
+
+cycle_key
+    :   {input.LT(1).getText().equalsIgnoreCase("cycle")}? REGULAR_ID
+    ;
+
+cache_key
+    :   {input.LT(1).getText().equalsIgnoreCase("cache")}? REGULAR_ID
+    ;
+
+nocache_key
+    :   {input.LT(1).getText().equalsIgnoreCase("nocache")}? REGULAR_ID
+    ;
+
+nomaxvalue_key
+    :   {input.LT(1).getText().equalsIgnoreCase("nomaxvalue")}? REGULAR_ID
+    ;
+
+nominvalue_key
+    :   {input.LT(1).getText().equalsIgnoreCase("nominvalue")}? REGULAR_ID
+    ;
