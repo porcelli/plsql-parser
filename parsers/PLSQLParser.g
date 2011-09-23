@@ -117,6 +117,9 @@ tokens {
     SQL_SCRIPT;
     SET_SERVEROUTPUT;
     ATTRIBUTE;
+    DROP_SEQUENCE;
+    ALTER_SEQUENCE;
+    CREATE_SEQUENCE;
 }
 
 @header {
@@ -164,11 +167,13 @@ backtrack=true;
 }    :    alter_function
     |    alter_package
     |    alter_procedure
+    |    alter_sequence
     |    alter_trigger
     |    alter_type
     |    create_function_body
     |    create_procedure_body
     |    create_package
+    |    create_sequence
 
 //    |    create_index //TODO
 //    |    create_table //TODO
@@ -181,6 +186,7 @@ backtrack=true;
     |    drop_function
     |    drop_package
     |    drop_procedure
+    |    drop_sequence
     |    drop_trigger
     |    drop_type
     ;
@@ -832,6 +838,52 @@ type_elements_parameter
 
 // $>
 // $>
+
+// $<Sequence DDLs
+
+drop_sequence
+    :   drop_key sequence_key sequence_name
+        SEMICOLON
+        -> ^(DROP_SEQUENCE[$drop_key.start] sequence_name)
+    ;
+
+alter_sequence
+    :    alter_key sequence_key sequence_name sequence_spec+
+         SEMICOLON
+        -> ^(ALTER_SEQUENCE[$alter_key.start] sequence_name sequence_spec+)
+    ;
+
+create_sequence
+    :    create_key sequence_key sequence_name
+    (    sequence_start_clause
+    |    sequence_spec
+    )*   SEMICOLON
+        -> ^(CREATE_SEQUENCE[$create_key.start] sequence_name sequence_start_clause* sequence_spec*)
+    ;
+
+// $<Common Sequence
+
+sequence_spec
+    :    increment_key^ by_key! UNSIGNED_INTEGER
+    |    maxvalue_key^ UNSIGNED_INTEGER
+    |    minvalue_key^ UNSIGNED_INTEGER
+    |    cache_key^ UNSIGNED_INTEGER
+    |    nomaxvalue_key
+    |    nominvalue_key
+    |    cycle_key
+    |    nocycle_key
+    |    nocache_key
+    |    order_key
+    |    noorder_key
+    ;
+
+sequence_start_clause
+    :    start_key^ with_key! UNSIGNED_INTEGER
+    ;
+
+// $>
+// $>
+
 
 // $<Common DDL Clauses
 

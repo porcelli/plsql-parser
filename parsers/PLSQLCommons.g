@@ -42,6 +42,7 @@ tokens {
     CONSTRAINT_NAME;
     LABEL_NAME;
     TYPE_NAME;
+    SEQUENCE_NAME;
     EXCEPTION_NAME;
     FUNCTION_NAME;
     PROCEDURE_NAME;
@@ -193,6 +194,11 @@ label_name
 type_name
     :    id_expression ((PERIOD id_expression)=> PERIOD id_expression)*
         -> ^(TYPE_NAME id_expression+)
+    ;
+
+sequence_name
+    :    id_expression ((PERIOD id_expression)=> PERIOD id_expression)*
+        -> ^(SEQUENCE_NAME id_expression+)
     ;
 
 exception_name

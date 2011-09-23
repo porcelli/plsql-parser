@@ -478,6 +478,41 @@ type_elements_parameter
 // $>
 // $>
 
+// $<Sequence DDLs
+
+drop_sequence
+    :   ^(DROP_SEQUENCE sequence_name)
+    ;
+
+alter_sequence
+    :    ^(ALTER_SEQUENCE sequence_name sequence_spec+)
+    ;
+
+create_sequence
+    :    ^(CREATE_SEQUENCE sequence_name sequence_spec*)
+    ;
+
+// $<Common Sequence
+
+sequence_spec
+    :    ^(START_VK UNSIGNED_INTEGER)
+    |    ^(INCREMENT_VK UNSIGNED_INTEGER)
+    |    ^(MAXVALUE_VK UNSIGNED_INTEGER)
+    |    ^(MINVALUE_VK UNSIGNED_INTEGER)
+    |    ^(CACHE_VK UNSIGNED_INTEGER)
+    |    NOMAXVALUE_VK
+    |    NOMINVALUE_VK
+    |    CYCLE_VK
+    |    NOCYCLE_VK
+    |    NOCACHE_VK
+    |    ORDER_VK
+    |    NOORDER_VK
+    ;
+
+// $>
+// $>
+
+
 // $<Common DDL Clauses
 
 invoker_rights_clause

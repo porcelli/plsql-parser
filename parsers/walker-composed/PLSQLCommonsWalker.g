@@ -109,6 +109,10 @@ type_name
     :    ^(TYPE_NAME ID+)
     ;
 
+sequence_name
+    :    ^(SEQUENCE_NAME ID+)
+    ;
+
 exception_name
     :    ^(EXCEPTION_NAME char_set_name? ID+)
     ;

@@ -330,6 +330,13 @@ tokens {
     TRAILING_VK;
     BOTH_VK;
     EXTRACT_VK;
+    SEQUENCE_VK;
+    NOORDER_VK;
+    CYCLE_VK;
+    CACHE_VK;
+    NOCACHE_VK;
+    NOMAXVALUE_VK;
+    NOMINVALUE_VK;
 }
 
 create_key
@@ -2424,4 +2431,32 @@ from_key
 
 where_key
     :    SQL92_RESERVED_WHERE
+    ;
+
+sequence_key
+    :   {input.LT(1).getText().equalsIgnoreCase("sequence")}? REGULAR_ID -> SEQUENCE_VK[$REGULAR_ID]
+    ;
+
+noorder_key
+    :   {input.LT(1).getText().equalsIgnoreCase("noorder")}? REGULAR_ID -> NOORDER_VK[$REGULAR_ID]
+    ;
+
+cycle_key
+    :   {input.LT(1).getText().equalsIgnoreCase("cycle")}? REGULAR_ID -> CYCLE_VK[$REGULAR_ID]
+    ;
+
+cache_key
+    :   {input.LT(1).getText().equalsIgnoreCase("cache")}? REGULAR_ID -> CACHE_VK[$REGULAR_ID]
+    ;
+
+nocache_key
+    :   {input.LT(1).getText().equalsIgnoreCase("nocache")}? REGULAR_ID -> NOCACHE_VK[$REGULAR_ID]
+    ;
+
+nomaxvalue_key
+    :   {input.LT(1).getText().equalsIgnoreCase("nomaxvalue")}? REGULAR_ID -> NOMAXVALUE_VK[$REGULAR_ID]
+    ;
+
+nominvalue_key
+    :   {input.LT(1).getText().equalsIgnoreCase("nominvalue")}? REGULAR_ID -> NOMINVALUE_VK[$REGULAR_ID]
     ;
