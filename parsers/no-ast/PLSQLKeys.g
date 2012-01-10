@@ -2138,3 +2138,15 @@ nomaxvalue_key
 nominvalue_key
     :   {input.LT(1).getText().equalsIgnoreCase("nominvalue")}? REGULAR_ID
     ;
+
+search_key
+    :   {input.LT(1).getText().equalsIgnoreCase("search")}? REGULAR_ID
+    ;
+
+depth_key
+    :   {input.LT(1).getText().equalsIgnoreCase("depth")}? REGULAR_ID
+    ;
+
+breadth_key
+    :   {input.LT(1).getText().equalsIgnoreCase("breadth")}? REGULAR_ID
+    ;

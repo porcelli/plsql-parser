@@ -337,6 +337,9 @@ tokens {
     NOCACHE_VK;
     NOMAXVALUE_VK;
     NOMINVALUE_VK;
+    SEARCH_VK;
+    DEPTH_VK;
+    BREADTH_VK;
 }
 
 create_key
@@ -2459,4 +2462,16 @@ nomaxvalue_key
 
 nominvalue_key
     :   {input.LT(1).getText().equalsIgnoreCase("nominvalue")}? REGULAR_ID -> NOMINVALUE_VK[$REGULAR_ID]
+    ;
+
+search_key
+    :   {input.LT(1).getText().equalsIgnoreCase("search")}? REGULAR_ID -> SEARCH_VK[$REGULAR_ID]
+    ;
+
+depth_key
+    :   {input.LT(1).getText().equalsIgnoreCase("depth")}? REGULAR_ID -> DEPTH_VK[$REGULAR_ID]
+    ;
+
+breadth_key
+    :   {input.LT(1).getText().equalsIgnoreCase("breadth")}? REGULAR_ID -> BREADTH_VK[$REGULAR_ID]
     ;

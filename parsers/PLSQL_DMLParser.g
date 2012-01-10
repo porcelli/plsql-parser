@@ -207,7 +207,20 @@ subquery_factoring_clause
 
 factoring_element
     :    query_name (LEFT_PAREN column_name (COMMA column_name)* RIGHT_PAREN)? as_key LEFT_PAREN subquery RIGHT_PAREN
-        -> ^(FACTORING query_name subquery)
+         search_clause?
+         cycle_clause?
+        -> ^(FACTORING query_name subquery search_clause? cycle_clause?)
+    ;
+
+search_clause
+    :    search_key ( depth_key | breadth_key ) first_key by_key
+             column_name asc_key ? desc_key ? (nulls_key first_key)? (nulls_key last_key)?
+             (COMMA column_name asc_key ? desc_key ? (nulls_key first_key)? (nulls_key last_key)? )*
+             set_key column_name
+    ;
+
+cycle_clause
+    :    cycle_key column_name ( COMMA column_name)* set_key column_name to_key expression default_key expression
     ;
 
 subquery

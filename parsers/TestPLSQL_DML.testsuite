@@ -25,7 +25,7 @@ group_by_clause:
 
 select_statement:
 <<with
-  REPORTS_TO_101 (EID, EMP_LAST, MGR_ID, REPORTLEVEL) AS
+  REPORTS_TO_101 (EID, EMP_LAST, MGR_ID, REPORTLEVEL) as
   (
      select EMPLOYEE_ID, LAST_NAME, MANAGER_ID, 0 REPORTLEVEL
      from EMPLOYEES
@@ -39,6 +39,23 @@ select EID, EMP_LAST, MGR_ID, REPORTLEVEL
 from REPORTS_TO_101 R, AUTO A
 where R.C1 = A.C2
 order by REPORTLEVEL, EID>> OK
+<<
+with
+  ORG_CHART (EID, EMP_LAST, MGR_ID, REPORTLEVEL, SALARY, JOB_ID) as
+  (
+    select EMPLOYEE_ID, LAST_NAME, MANAGER_ID, 0 REPORTLEVEL, SALARY, JOB_ID
+    from EMPLOYEES
+    where MANAGER_ID is null
+  union all
+    select E.EMPLOYEE_ID, E.LAST_NAME, E.MANAGER_ID,
+           R.REPORTLEVEL+1 REPORTLEVEL, E.SALARY, E.JOB_ID
+    from ORG_CHART R, EMPLOYEES E
+    where R.EID = E.MANAGER_ID
+  )
+  search depth first by EMP_LAST set ORDER1
+select LPAD(' ',2*REPORTLEVEL)||EMP_LAST EMP_NAME, EID, MGR_ID, SALARY, JOB_ID
+from ORG_CHART
+order by ORDER1>> OK
 <<select :1, :X, :1 + 1, 1 + :2 from A where A=:3 and b= : 4 and c= :5and :A = :b>> OK
 <<select
   'Hello'
