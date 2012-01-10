@@ -121,7 +121,7 @@ subquery_factoring_clause
     ;
 
 factoring_element
-    :    query_name as_key LEFT_PAREN subquery RIGHT_PAREN
+    :    query_name (LEFT_PAREN column_name (COMMA column_name)* RIGHT_PAREN)? as_key LEFT_PAREN subquery RIGHT_PAREN
     ;
 
 subquery
