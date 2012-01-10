@@ -24,6 +24,19 @@ group_by_clause:
 "group by country_name,prod_name,calendar_year" OK
 
 select_statement:
+<<select
+  'Hello'
+, 'ORACLE.dbs'
+, 'Jackie''s raincoat'
+, '09-MAR-98'
+, ''
+, ''''
+, q'!name LIKE '%DBMS_%%'!'
+, q'<'So,' she said, 'It's finished.'>'
+, q'{SELECT * FROM employees WHERE last_name = 'Smith';}'
+, q'"name like '['"'
+--, N'nchar literal'
+from dual>> OK
 "select * from tablex, tabley" OK
 <<with
    dept_costs as ( 
