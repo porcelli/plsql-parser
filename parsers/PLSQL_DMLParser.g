@@ -1057,8 +1057,10 @@ vector_expr
     ;
 
 quantified_expression
-    :    ( some_key^ | exists_key^ | all_key^ | any_key^ ) 
-        LEFT_PAREN! expression_wrapper RIGHT_PAREN!
+    :    ( some_key^ | exists_key^ | all_key^ | any_key^ )
+         ( (LEFT_PAREN select_key) => LEFT_PAREN! query_block RIGHT_PAREN!
+           | LEFT_PAREN! expression_wrapper RIGHT_PAREN!
+         )
     ;
 
 standard_function

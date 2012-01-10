@@ -24,6 +24,22 @@ group_by_clause:
 "group by country_name,prod_name,calendar_year" OK
 
 select_statement:
+<<select *
+from A3
+where
+	 "A3"."M_ID"="A2"."M_ID"
+	 and "A3"."MI_T" =
+	 any (((
+	        select "A4"."SYS$"."ID" from A4
+	)))
+>> OK
+<<select *
+from A3
+where
+	 "A3"."M_ID"="A2"."M_ID"
+	 and "A3"."MI_T" =
+	 any ( select "A4"."SYS$"."ID" from A4 )
+>> OK
 <<with
   REPORTS_TO_101 (EID, EMP_LAST, MGR_ID, REPORTLEVEL) as
   (
