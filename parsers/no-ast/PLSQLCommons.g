@@ -146,6 +146,7 @@ trigger_name
 variable_name
     :    COLON? (INTRODUCER char_set_name)?
             id_expression (((PERIOD|COLON) id_expression)=> (PERIOD|COLON) id_expression)?
+    |    COLON UNSIGNED_INTEGER
     ;
 
 index_name
@@ -280,6 +281,7 @@ general_element
 general_element_part
     :    (INTRODUCER char_set_name)? COLON? id_expression 
             (((PERIOD|COLON) id_expression)=> (PERIOD|COLON) id_expression)* function_argument?
+    |    COLON UNSIGNED_INTEGER
     ;
 
 // $>

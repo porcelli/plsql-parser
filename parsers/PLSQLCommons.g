@@ -227,6 +227,8 @@ variable_name
             id_expression (((PERIOD|COLON) id_expression)=> (PERIOD|COLON) id_expression)?
         ->{isHosted}? ^(HOSTED_VARIABLE_NAME char_set_name? id_expression*)
         -> ^(VARIABLE_NAME char_set_name? id_expression*)
+    |    (COLON UNSIGNED_INTEGER)
+        -> ^(HOSTED_VARIABLE_NAME UNSIGNED_INTEGER)
     ;
 
 index_name
@@ -384,6 +386,8 @@ general_element_part
         ->{isHosted && !isRoutineCall}? ^(HOSTED_VARIABLE char_set_name? id_expression+)
         ->{!isHosted && isRoutineCall}? ^(ROUTINE_CALL ^(ROUTINE_NAME char_set_name? id_expression+) function_argument)
         -> ^(ANY_ELEMENT char_set_name? id_expression+)
+        | (COLON UNSIGNED_INTEGER)
+        -> ^(HOSTED_VARIABLE COLON UNSIGNED_INTEGER)
     ;
 
 // $>

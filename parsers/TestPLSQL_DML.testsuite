@@ -24,6 +24,7 @@ group_by_clause:
 "group by country_name,prod_name,calendar_year" OK
 
 select_statement:
+<<select :1, :X, :1 + 1, 1 + :2 from A where A=:3 and b= : 4 and c= :5and :A = :b>> OK
 <<select
   'Hello'
 , 'ORACLE.dbs'
