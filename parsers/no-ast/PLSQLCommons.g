@@ -321,4 +321,27 @@ id_expression
     :    REGULAR_ID
     |    DELIMITED_ID
     ;
+
+not_equal_op
+    :    NOT_EQUAL_OP
+    |    LESS_THAN_OP GREATER_THAN_OP
+    |    EXCLAMATION_OPERATOR_PART EQUALS_OP
+    |    CARRET_OPERATOR_PART EQUALS_OP
+    ;
+
+greater_than_or_equals_op
+    :    GREATER_THAN_OR_EQUALS_OP
+    |    GREATER_THAN_OP EQUALS_OP
+    ;
+
+less_than_or_equals_op
+    :    LESS_THAN_OR_EQUALS_OP
+    |    LESS_THAN_OP EQUALS_OP
+    ;
+
+concatenation_op
+    :    CONCATENATION_OP
+    |    VERTICAL_BAR VERTICAL_BAR
+    ;
+
 // $>

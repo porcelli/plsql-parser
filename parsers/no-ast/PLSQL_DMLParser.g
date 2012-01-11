@@ -685,7 +685,7 @@ multiset_type
 
 relational_expression
     :    compound_expression
-    ( ( EQUALS_OP | NOT_EQUAL_OP | LESS_THAN_OP | GREATER_THAN_OP | LESS_THAN_OR_EQUALS_OP | GREATER_THAN_OR_EQUALS_OP ) compound_expression)*
+    ( ( EQUALS_OP | not_equal_op | LESS_THAN_OP | GREATER_THAN_OP | less_than_or_equals_op | greater_than_or_equals_op ) compound_expression)*
     ;
 
 compound_expression
@@ -718,7 +718,7 @@ between_elements
     ;
 
 concatenation
-    :    additive_expression (CONCATENATION_OP additive_expression)*
+    :    additive_expression (concatenation_op additive_expression)*
     ;
 
 concatenation_wrapper

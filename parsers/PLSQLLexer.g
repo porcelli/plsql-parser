@@ -276,6 +276,17 @@ NOT_EQUAL_OP
     |    '^='
     |    '~='
     ;
+CARRET_OPERATOR_PART
+    :    '^'
+    ;
+
+TILDE_OPERATOR_PART
+    :    '~'
+    ;
+
+EXCLAMATION_OPERATOR_PART
+    :    '!'
+    ;
 
 GREATER_THAN_OP
     :    '>'

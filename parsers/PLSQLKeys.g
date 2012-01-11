@@ -198,7 +198,6 @@ tokens {
     PRECISION_VK;
     TIME_VK;
     TIMESTAMP_VK;
-    DATE_VK;
     NUMERIC_VK;
     DECIMAL_VK;
     DEC_VK;
