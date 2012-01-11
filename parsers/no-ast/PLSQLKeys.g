@@ -1795,7 +1795,8 @@ timestamp_key
     :    {input.LT(1).getText().equalsIgnoreCase("timestamp")}? REGULAR_ID
     ;
 
-date_key:    {input.LT(1).getText().equalsIgnoreCase("date")}?=> REGULAR_ID
+date_key//:    {input.LT(1).getText().equalsIgnoreCase("date")}?=> REGULAR_ID
+    :    SQL92_RESERVED_DATE
     ;
 
 numeric_key

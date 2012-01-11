@@ -451,6 +451,10 @@ SQL92_RESERVED_CURRENT
     :    'current'
     ;
 
+SQL92_RESERVED_DATE
+    :    'date'
+    ;
+
 SQL92_RESERVED_DECLARE
     :    'declare'
     ;

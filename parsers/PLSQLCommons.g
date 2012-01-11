@@ -396,6 +396,7 @@ general_element_part
 
 constant
     :    numeric
+    |    date_key quoted_string
     |    quoted_string
     |    null_key
     |    true_key
@@ -414,6 +415,7 @@ numeric
 
 quoted_string
     :    CHAR_STRING
+    |    CHAR_STRING_PERL
     ;
 
 id
