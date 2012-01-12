@@ -24,6 +24,7 @@ group_by_clause:
 "group by country_name,prod_name,calendar_year" OK
 
 select_statement:
+<<select trim(both ' ' from '  a  ') from dual where trim(:a) is not null>> OK
 <<with o as
 (
         select 'a' obj, 'b' link from dual union all
