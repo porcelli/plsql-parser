@@ -450,6 +450,10 @@ SQL92_RESERVED_CONNECT
     :    'connect'
     ;
 
+PLSQL_NON_RESERVED_CONNECT_BY_ROOT
+    :    'connect_by_root'
+    ;
+
 PLSQL_RESERVED_CRASH
     :    'crash'
     ;

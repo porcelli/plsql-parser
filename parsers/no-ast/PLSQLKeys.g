@@ -1184,6 +1184,10 @@ multiset_key
     :    {input.LT(1).getText().equalsIgnoreCase("multiset")}?=> REGULAR_ID
     ;
 
+connect_by_root_key
+    :    PLSQL_NON_RESERVED_CONNECT_BY_ROOT
+    ;
+
 last_value_key
     :    {input.LT(1).getText().equalsIgnoreCase("last_value")}?=> REGULAR_ID
     ;

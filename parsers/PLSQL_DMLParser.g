@@ -989,6 +989,7 @@ unary_expression
     :    MINUS_SIGN unary_expression -> ^(UNARY_OPERATOR[$MINUS_SIGN] unary_expression)
     |    PLUS_SIGN unary_expression -> ^(UNARY_OPERATOR[$PLUS_SIGN] unary_expression)
     |    prior_key^ unary_expression
+    |    connect_by_root_key^ unary_expression
     |    {input.LT(1).getText().equalsIgnoreCase("new") && !input.LT(2).getText().equals(".")}?=> new_key^ unary_expression
     |    distinct_key^ unary_expression
     |    all_key^ unary_expression
