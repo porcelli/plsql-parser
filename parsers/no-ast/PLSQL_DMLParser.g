@@ -55,6 +55,7 @@ parser grammar PLSQL_DMLParser;
         String functionName = originalFunctionName.toLowerCase();
         if (functionName.equals("cume_dist")
                 || functionName.equals("dense_rank")
+                || functionName.equals("listagg")
                 || functionName.equals("percent_rank")
                 || functionName.equals("percentile_cont")
                 || functionName.equals("percentile_disc")

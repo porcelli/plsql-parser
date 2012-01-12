@@ -24,6 +24,12 @@ group_by_clause:
 "group by country_name,prod_name,calendar_year" OK
 
 select_statement:
+<<select deptno
+        , ename
+        , hiredate
+        , listagg(ename, ',') within group (order by hiredate) over (partition by deptno) as employees
+from emp
+>> OK
 <<select trim(both ' ' from '  a  ') from dual where trim(:a) is not null>> OK
 <<with o as
 (
