@@ -24,6 +24,12 @@ group_by_clause:
 "group by country_name,prod_name,calendar_year" OK
 
 select_statement:
+<<select dummy,
+dummy D,
+'DDD' as DDD,
+'DDD' as "DFDF",
+'1' as
+from dual>> OK
 <<select
  1
  , cursor(select 1 from dual) C1

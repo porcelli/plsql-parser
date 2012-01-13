@@ -79,8 +79,13 @@ partition_extension_clause
     ;
 
 alias
+options
+{
+backtrack=true;
+}
     :    as_key? (id|alias_quoted_string)
     ->    ^(ALIAS id? alias_quoted_string?)
+    |    as_key
     ;
 
 alias_quoted_string
