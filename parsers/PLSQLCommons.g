@@ -407,6 +407,11 @@ general_element_part
         -> ^(HOSTED_VARIABLE COLON UNSIGNED_INTEGER)
     ;
 
+table_element
+    :    (INTRODUCER char_set_name)? id_expression (PERIOD id_expression)*
+         -> ^(ANY_ELEMENT char_set_name? id_expression+)
+    ;
+
 // $>
 
 // $<Lexer Mappings
@@ -467,6 +472,10 @@ less_than_or_equals_op
 concatenation_op
     :    CONCATENATION_OP
     |    VERTICAL_BAR VERTICAL_BAR
+    ;
+
+outer_join_sign
+    :    LEFT_PAREN PLUS_SIGN RIGHT_PAREN
     ;
 
 // $>

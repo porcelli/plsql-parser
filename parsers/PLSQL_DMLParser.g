@@ -1046,7 +1046,8 @@ case_else_part
 // $>
 
 atom
-    :    constant
+    :    (table_element outer_join_sign) => table_element outer_join_sign
+    |    constant
     |    general_element
     |    LEFT_PAREN! ((select_key)=> subquery|expression_or_vector) RIGHT_PAREN!
     ;
