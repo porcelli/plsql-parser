@@ -899,6 +899,8 @@ in_elements
     :    LEFT_PAREN ((select_key)=> subquery {mode = 1;} | concatenation_wrapper (COMMA concatenation_wrapper)* ) RIGHT_PAREN
         -> {mode == 1}? subquery
         -> ^(EXPR_LIST concatenation_wrapper+)
+        | constant
+        -> ^(EXPR_LIST constant)
     ;
 
 between_elements

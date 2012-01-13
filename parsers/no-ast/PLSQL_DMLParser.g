@@ -717,6 +717,7 @@ like_escape_part
 
 in_elements
     :    LEFT_PAREN ((select_key)=> subquery | concatenation_wrapper (COMMA concatenation_wrapper)* ) RIGHT_PAREN
+    |    constant
     ;
 
 between_elements

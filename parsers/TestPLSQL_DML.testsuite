@@ -24,6 +24,11 @@ group_by_clause:
 "group by country_name,prod_name,calendar_year" OK
 
 select_statement:
+<<select *
+from "P"
+where
+-- note there are no parens around 231092
+( ( "P"."ID" in 231092 ) )>> OK
 << select *
 from  t1, t2
 where (trunc(t1.timestamp) between to_date('110226','yymmdd') and to_date('110326','yymmdd'))
