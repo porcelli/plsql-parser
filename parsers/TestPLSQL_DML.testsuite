@@ -127,7 +127,7 @@ order by ORDER1>> OK
 , q'<'So,' she said, 'It's finished.'>'
 , q'{SELECT * FROM employees WHERE last_name = 'Smith';}'
 , q'"name like '['"'
---, N'nchar literal'
+, N'nchar literal'
 from dual>> OK
 "select * from tablex, tabley" OK
 <<with

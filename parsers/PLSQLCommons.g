@@ -416,6 +416,7 @@ numeric
 quoted_string
     :    CHAR_STRING
     |    CHAR_STRING_PERL
+    |    NATIONAL_CHAR_STRING_LIT
     ;
 
 id
