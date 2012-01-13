@@ -309,7 +309,8 @@ table_element
 // $<Lexer Mappings
 
 constant
-    :    numeric
+    :    timestamp_key quoted_string (at_key time_key zone_key quoted_string)?
+    |    numeric
     |    date_key quoted_string
     |    quoted_string
     |    null_key

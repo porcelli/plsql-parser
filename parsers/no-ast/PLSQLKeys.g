@@ -1106,6 +1106,7 @@ submultiset_key
 
 at_key
     :    {input.LT(1).getText().equalsIgnoreCase("at")}?=> REGULAR_ID
+//    :    SQL92_RESERVED_AT
     ;
 
 a_key

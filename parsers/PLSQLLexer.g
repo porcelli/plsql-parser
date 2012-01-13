@@ -406,9 +406,9 @@ SQL92_RESERVED_ASC
     :    'asc'
     ;
 
-SQL92_RESERVED_AT
-    :    'at'
-    ;
+//SQL92_RESERVED_AT
+//    :    'at'
+//    ;
 
 SQL92_RESERVED_BEGIN
     :    'begin'

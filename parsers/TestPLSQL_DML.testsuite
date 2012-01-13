@@ -24,6 +24,10 @@ group_by_clause:
 "group by country_name,prod_name,calendar_year" OK
 
 select_statement:
+<<select
+timestamp '2009-10-29 01:30:00',
+timestamp '2009-10-29 01:30:00' at time zone 'us/pacific'from dual>> OK
+<<select from_tz(cast(to_date('1999-12-01 11:00:00','yyyy-mm-dd hh:mi:ss') as timestamp), 'america/New_York') at time zone 'america/Los_angeles' "West Coast Time" from dual>> OK
 <<select *
 from "P"
 where
