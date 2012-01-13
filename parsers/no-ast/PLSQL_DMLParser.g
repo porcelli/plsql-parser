@@ -881,7 +881,10 @@ standard_function
             RIGHT_PAREN over_clause?
     |    (cast_key|xmlcast_key) 
             LEFT_PAREN
-                (multiset_key LEFT_PAREN subquery RIGHT_PAREN|concatenation_wrapper) as_key type_spec 
+                ( (multiset_key LEFT_PAREN (select_key|with_key)) => multiset_key LEFT_PAREN subquery RIGHT_PAREN
+                | concatenation_wrapper
+                )
+                as_key type_spec
             RIGHT_PAREN
     |    chr_key
             LEFT_PAREN 
@@ -889,7 +892,7 @@ standard_function
             RIGHT_PAREN
     |    collect_key
             LEFT_PAREN 
-                (distinct_key|unique_key)? column_name collect_order_by_part?
+                (distinct_key|unique_key)? concatenation_wrapper collect_order_by_part?
             RIGHT_PAREN
     |    stantard_function_enabling_within_or_over 
             function_argument within_or_over_part+
