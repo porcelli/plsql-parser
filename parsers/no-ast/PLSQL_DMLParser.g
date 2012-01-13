@@ -630,6 +630,9 @@ seed_part
 // $>
 
 // $<Expression & Condition
+cursor_expression
+    :    cursor_key LEFT_PAREN subquery RIGHT_PAREN
+    ;
 
 expression_list
     :    LEFT_PAREN expression? (COMMA expression)* RIGHT_PAREN
@@ -644,7 +647,8 @@ condition_wrapper
     ;
 
 expression
-    :    logical_and_expression ( or_key logical_and_expression )*    
+    :    (cursor_key LEFT_PAREN (select_key|with_key)) => cursor_expression
+    |    logical_and_expression ( or_key logical_and_expression )*
     ;
 
 expression_wrapper

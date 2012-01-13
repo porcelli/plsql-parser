@@ -24,6 +24,15 @@ group_by_clause:
 "group by country_name,prod_name,calendar_year" OK
 
 select_statement:
+<<select
+ 1
+ , cursor(select 1 from dual) C1
+ , cursor(select 2, 3 from dual) as C2
+ from
+ table(select 1 from dual)>> OK
+<<select e1.last_name from employees e1
+ where f( cursor(select e2.hire_date from employees e2 where e1.employee_id = e2.manager_id), e1.hire_date) = 1
+order by last_name>> OK
 <<select title into my_title
  from
  table(select courses from department where name = 'history')

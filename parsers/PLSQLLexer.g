@@ -466,6 +466,10 @@ SQL92_RESERVED_CURRENT
     :    'current'
     ;
 
+SQL92_RESERVED_CURSOR
+    :    'cursor'
+    ;
+
 SQL92_RESERVED_DATE
     :    'date'
     ;

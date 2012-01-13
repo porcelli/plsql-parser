@@ -388,8 +388,8 @@ subtype_key
     :    {input.LT(1).getText().equalsIgnoreCase("subtype")}? REGULAR_ID
     ;
 
-cursor_key
-    :    {input.LT(1).getText().equalsIgnoreCase("cursor")}? REGULAR_ID
+cursor_key//{input.LT(1).getText().equalsIgnoreCase("cursor")}? REGULAR_ID
+    :    SQL92_RESERVED_CURSOR
     ;
 
 nextval_key
