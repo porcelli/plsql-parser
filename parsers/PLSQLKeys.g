@@ -251,6 +251,7 @@ tokens {
     GROUPING_VK;
     INCLUDE_VK;
     IGNORE_VK;
+    RESPECT_VK;
     SUBMULTISET_VK;
     LIKEC_VK;
     LIKE2_VK;
@@ -1414,6 +1415,10 @@ include_key
 
 ignore_key
     :    {input.LT(1).getText().equalsIgnoreCase("ignore")}?=> REGULAR_ID -> IGNORE_VK[$REGULAR_ID]
+    ;
+
+respect_key
+    :    {input.LT(1).getText().equalsIgnoreCase("respect")}?=> REGULAR_ID ->RESPECT_VK[$REGULAR_ID]
     ;
 
 unique_key

@@ -871,8 +871,8 @@ quantified_expression
     ;
 
 standard_function
-    :    stantard_function_enabling_over function_argument over_clause?
-    |    stantard_function_enabling_using function_argument using_clause?
+    :    stantard_function_enabling_over function_argument_analytic over_clause?
+    |    stantard_function_enabling_using function_argument_analytic using_clause?
     |    count_key
             LEFT_PAREN
                 ( ASTERISK | concatenation_wrapper ) 
@@ -899,10 +899,8 @@ standard_function
             LEFT_PAREN
                 REGULAR_ID from_key concatenation_wrapper 
             RIGHT_PAREN
-    |    (first_value_key|last_value_key) 
-            LEFT_PAREN
-                concatenation_wrapper (ignore_key nulls_key)? 
-            RIGHT_PAREN over_clause
+    |    (first_value_key|last_value_key) function_argument_analytic
+             respect_or_ignore_nulls? over_clause
     |    stantard_function_pedictions
             LEFT_PAREN
                 expression_wrapper (COMMA expression_wrapper)* cost_matrix_clause? using_clause? 

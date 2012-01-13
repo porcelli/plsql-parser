@@ -1092,6 +1092,10 @@ ignore_key
     :    {input.LT(1).getText().equalsIgnoreCase("ignore")}?=> REGULAR_ID
     ;
 
+respect_key
+    :    {input.LT(1).getText().equalsIgnoreCase("respect")}?=> REGULAR_ID
+    ;
+
 unique_key
     :    SQL92_RESERVED_UNIQUE
     ;

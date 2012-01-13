@@ -199,6 +199,17 @@ function_argument
         RIGHT_PAREN
     ;
 
+function_argument_analytic
+    :    LEFT_PAREN
+            (argument respect_or_ignore_nulls?)?
+            (COMMA argument respect_or_ignore_nulls? )*
+         RIGHT_PAREN
+    ;
+
+respect_or_ignore_nulls
+    :    (respect_key | ignore_key) nulls_key
+    ;
+
 argument
     :    ((id EQUALS_OP GREATER_THAN_OP)=> id EQUALS_OP GREATER_THAN_OP)? expression_wrapper
     ;

@@ -1103,6 +1103,9 @@ standard_function
             LEFT_PAREN!
                 concatenation_wrapper (ignore_key! nulls_key)? 
             RIGHT_PAREN! over_clause
+    |    (first_value_key^|last_value_key^)
+             function_argument_analytic
+             respect_or_ignore_nulls? over_clause
     |    stantard_function_pedictions^
             LEFT_PAREN!
                 expression_wrapper (COMMA expression_wrapper)* cost_matrix_clause? using_clause? 

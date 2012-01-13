@@ -290,6 +290,18 @@ function_argument
         -> ^(ARGUMENTS argument*)
     ;
 
+function_argument_analytic
+    :    LEFT_PAREN
+            (argument respect_or_ignore_nulls?)?
+            (COMMA argument respect_or_ignore_nulls? )*
+         RIGHT_PAREN
+         -> ^(ARGUMENTS argument*)
+    ;
+
+respect_or_ignore_nulls
+    :    (respect_key | ignore_key) nulls_key
+    ;
+
 argument
 @init    {    int mode = 0;    }
     :    ((id EQUALS_OP GREATER_THAN_OP)=> id EQUALS_OP GREATER_THAN_OP {mode = 1;})? expression_wrapper
