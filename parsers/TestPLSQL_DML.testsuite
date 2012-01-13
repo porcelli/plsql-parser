@@ -25,6 +25,23 @@ group_by_clause:
 
 select_statement:
 <<select
+ interval '4 5:12:10.222' day to second(3)
+,interval '4 5:12' day to minute
+,interval '400 5' day(3) to hour
+,interval '400' day(3)
+,interval '11:12:10.2222222' hour to second(7)
+,interval '11:20' hour to minute
+,interval '10' hour
+,interval '10:22' minute to second
+,interval '10' minute
+,interval '4' day
+,interval '25' hour
+,interval '40' minute
+,interval '120' hour(3)
+,interval '30.12345' second(2,4)
+,interval :a day
+from dual>> OK
+<<select
 timestamp '2009-10-29 01:30:00',
 timestamp '2009-10-29 01:30:00' at time zone 'us/pacific'from dual>> OK
 <<select from_tz(cast(to_date('1999-12-01 11:00:00','yyyy-mm-dd hh:mi:ss') as timestamp), 'america/New_York') at time zone 'america/Los_angeles' "West Coast Time" from dual>> OK

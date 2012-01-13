@@ -310,6 +310,12 @@ table_element
 
 constant
     :    timestamp_key quoted_string (at_key time_key zone_key quoted_string)?
+    |    interval_key (quoted_string | general_element_part)
+         ( day_key | hour_key | minute_key | second_key)
+         ( LEFT_PAREN UNSIGNED_INTEGER (COMMA UNSIGNED_INTEGER)? RIGHT_PAREN)?
+         ( to_key
+             ( day_key | hour_key | minute_key | second_key (LEFT_PAREN UNSIGNED_INTEGER RIGHT_PAREN)? )
+         )?
     |    numeric
     |    date_key quoted_string
     |    quoted_string
