@@ -24,6 +24,10 @@ group_by_clause:
 "group by country_name,prod_name,calendar_year" OK
 
 select_statement:
+<<select title into my_title
+ from
+ table(select courses from department where name = 'history')
+ where name like '%Etruscan%'>> OK
 <<select deptno
         , ename
         , hiredate

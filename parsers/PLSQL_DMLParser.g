@@ -753,9 +753,10 @@ dml_table_expression_clause
 
 table_collection_expression
     :    table_key
-        LEFT_PAREN expression RIGHT_PAREN  
-        (LEFT_PAREN PLUS_SIGN RIGHT_PAREN)?
-        -> ^(EXPR expression) PLUS_SIGN? 
+         ( (LEFT_PAREN (select_key | with_key)) => LEFT_PAREN subquery RIGHT_PAREN
+         | LEFT_PAREN expression RIGHT_PAREN //(LEFT_PAREN PLUS_SIGN RIGHT_PAREN)?
+         )
+        -> ^(EXPR subquery? expression?) //PLUS_SIGN?
     ;
 
 subquery_restriction_clause
