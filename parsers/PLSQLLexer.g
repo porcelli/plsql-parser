@@ -750,6 +750,14 @@ PLSQL_NON_RESERVED_ELSIF
     :    'elsif'
     ;
 
+PLSQL_NON_RESERVED_PIVOT
+    :    'pivot'
+    ;
+
+PLSQL_NON_RESERVED_UNPIVOT
+    :    'unpivot'
+    ;
+
 REGULAR_ID
     :    (SIMPLE_LETTER) (SIMPLE_LETTER | '_' | '0'..'9')*
     ;

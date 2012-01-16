@@ -24,6 +24,11 @@ group_by_clause:
 "group by country_name,prod_name,calendar_year" OK
 
 select_statement:
+<<select * from (dual),  (dual d), (dual) d>> OK
+<<select * from dual t1,
+			dual t2 join dual t3 using(dummy)
+			left outer join dual t4 using(dummy)
+			left outer join dual t5 using(dummy) >> OK
 <<select * from v.e
 where
 	c <> r

@@ -939,8 +939,8 @@ xml_key
     :    {input.LT(1).getText().equalsIgnoreCase("xml")}?=> REGULAR_ID
     ;
 
-pivot_key
-    :    {(input.LT(1).getText().equalsIgnoreCase("pivot"))}?=> REGULAR_ID
+pivot_key//:    {(input.LT(1).getText().equalsIgnoreCase("pivot"))}?=> REGULAR_ID
+    :     PLSQL_NON_RESERVED_PIVOT
     ;
 
 prior_key
@@ -1020,8 +1020,8 @@ decrement_key
     :    {input.LT(1).getText().equalsIgnoreCase("decrement")}?=> REGULAR_ID
     ;
 
-unpivot_key
-    :    {(input.LT(1).getText().equalsIgnoreCase("unpivot"))}?=> REGULAR_ID
+unpivot_key//:    {(input.LT(1).getText().equalsIgnoreCase("unpivot"))}?=> REGULAR_ID
+    :    PLSQL_NON_RESERVED_UNPIVOT
     ;
 
 keep_key
