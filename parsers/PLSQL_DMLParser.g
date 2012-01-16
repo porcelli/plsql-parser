@@ -896,11 +896,12 @@ like_escape_part
 
 in_elements
 @init    {    int mode = 0;    }
-    :    LEFT_PAREN ((select_key)=> subquery {mode = 1;} | concatenation_wrapper (COMMA concatenation_wrapper)* ) RIGHT_PAREN
-        -> {mode == 1}? subquery
-        -> ^(EXPR_LIST concatenation_wrapper+)
-        | constant
-        -> ^(EXPR_LIST constant)
+    :    (LEFT_PAREN+ (select_key|with_key)) =>  LEFT_PAREN subquery RIGHT_PAREN
+         -> subquery
+    |    LEFT_PAREN concatenation_wrapper (COMMA concatenation_wrapper)* RIGHT_PAREN
+         -> ^(EXPR_LIST concatenation_wrapper+)
+    |    constant
+         -> ^(EXPR_LIST constant)
     ;
 
 between_elements

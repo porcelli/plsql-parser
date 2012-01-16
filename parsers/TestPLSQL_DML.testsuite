@@ -24,6 +24,16 @@ group_by_clause:
 "group by country_name,prod_name,calendar_year" OK
 
 select_statement:
+<<select * from v.e
+where
+	c <> r
+	and  r  not in
+	(
+		(select distinct  r  from  v.s )
+		union
+		(select distinct  r  from v.p )
+	)
+	and  "timestamp" <= 1298505600000>> OK
 <<select cast(collect(cattr(aname, op, to_char(val), support, confidence)) as cattrs) cl_attrs from t>> OK
 <<select
  interval '4 5:12:10.222' day to second(3)
