@@ -188,7 +188,7 @@ table_ref
 table_ref_aux
     :
     (    (LEFT_PAREN (select_key|with_key)) => dml_table_expression_clause (pivot_clause|unique_key)?
-    |    (LEFT_PAREN) => LEFT_PAREN table_ref_aux RIGHT_PAREN
+    |    (LEFT_PAREN) => LEFT_PAREN table_ref RIGHT_PAREN
     |    (only_key LEFT_PAREN) => only_key LEFT_PAREN dml_table_expression_clause RIGHT_PAREN
     |    dml_table_expression_clause (pivot_clause|unpivot_clause)?
     )
@@ -203,7 +203,7 @@ join_clause
         query_partition_clause?
     (    join_on_part
     |    join_using_part
-    )?
+    )*
     ;
 
 join_on_part

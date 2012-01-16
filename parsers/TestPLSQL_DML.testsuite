@@ -24,11 +24,95 @@ group_by_clause:
 "group by country_name,prod_name,calendar_year" OK
 
 select_statement:
-<<select * from (dual),  (dual d), (dual) d>> OK
+<<select d.department_id as d_dept_id, e.department_id as e_dept_id, e.last_name
+   from departments d full outer join employees e
+   on d.department_id = e.department_id
+   order by d.department_id, e.last_name>> OK
+<<select department_id as d_e_dept_id, e.last_name
+   from departments d full outer join employees e
+   using (department_id)
+   order by department_id, e.last_name>> OK
+<<select d.department_id, e.last_name
+   from m.departments d right outer join n.employees e
+   on d.department_id = e.department_id
+   order by d.department_id, e.last_name>> OK
+<<select d.department_id, e.last_name
+   from departments d, employees e
+   where d.department_id = e.department_id(+)
+   order by d.department_id, e.last_name>> OK
+<<select times.time_id, product, quantity from inventory
+   partition by  (product)
+   right outer join times on (times.time_id = inventory.time_id)
+   where times.time_id between TO_date('01/04/01', 'DD/MM/YY')
+      and TO_date('06/04/01', 'DD/MM/YY')
+   order by  2,1>> OK
+<<select * from dual d1
+   join dual d2 on (d1.dummy = d2.dummy)
+   join dual d3 on(d1.dummy = d3.dummy)
+   join dual on(d1.dummy = dual.dummy)>> OK
+<<select * from t1
+   join t2 tt2 using(c)
+   join t3 tt3 using(d)
+   join t3 using(d)>> OK
+<<select * from dual t1
+   join (select * from dual) tt2 using(DUMMY)
+   join (select * from dual) using(DUMMY)
+   join (select * from dual) D on(D.dummy=tt3.dummy)
+   inner join (select * from dual) tt2 using(dummy)
+   inner join (select * from dual) using(dummy)
+   inner join (select * from dual) D on(D.dummy=t1.dummy)>> OK
+<<select * from dual t1
+   left outer join (select * from dual) tt2 using(DUMMY)
+   left outer join (select * from dual) using(DUMMY)
+   left outer join (select * from dual) D on(D.dummy=tt3.dummy)
+   inner join (select * from dual) tt2 using(dummy)
+   inner join (select * from dual) using(dummy)
+   inner join (select * from dual) D on(D.dummy=t1.dummy)>> OK
 <<select * from dual t1,
-			dual t2 join dual t3 using(dummy)
-			left outer join dual t4 using(dummy)
-			left outer join dual t5 using(dummy) >> OK
+    (
+        dual left outer join (select * from dual) tt2 using(DUMMY)
+    )>> OK
+<<select * from t1, ( t2 left outer join t3 using(dummy))>> OK
+<<select * from dual,( dual left outer join tt2 using(DUMMy))>> OK
+<<select * from t1,
+       ((((
+        t2 left outer join t3 using(dummy)
+       ))))>> OK
+<<select * from dual t1,
+(
+        (
+                (
+                        dual t2 join dual t3 using(dummy)
+                )
+                        left outer join dual t4 using(dummy)
+        )
+                        left outer join dual t5 using(dummy)
+)
+>> OK
+<<select * from dual t1, ( dual t2 join dual t3 using(dummy)) left outer join dual t4 using (dummy)>> OK
+<<select * from dual t1,
+                        dual t2 join dual t3 using(dummy)
+                        left outer join dual t4 using(dummy)
+                        left outer join dual t5 using(dummy)>> OK
+<<select *
+    from hdr a
+    inner join sh s
+    inner join ca c
+    on c.id = s.id
+    on a.va = s.va>> OK
+<<select department_id as d_e_dept_id, e.last_name
+   from departments
+   full outer join employees on (a=b)
+   left outer join employees on (a=b)
+   right outer join employees on (a=b)
+   join employees on (a=b)
+   inner join employees on (a=b)
+   cross join employees
+   natural join employees
+>> OK
+<<select d1.*, d2.* from dual d1 cross join dual d2>> OK
+<<select d1.*, d2.* from dual cross join dual >> OK
+<<select * from sys.dual natural join sys.dual >> OK
 <<select * from v.e
 where
 	c <> r
@@ -283,7 +367,7 @@ order by a.department_id>>  OK
 <<select country,prod,year,s 
   from sales_view_ref 
   model 
-    partition by (country) 
+    partition by (country)
     dimension by (prod, year) 
     measures (sale s) 
     ignore nav 
@@ -485,7 +569,7 @@ insert_statement:
 <<insert into departments 
    values  (departments_seq.nextval, 'entertainment', 162, 1400)>>  OK
 <<insert into employees 
-      (employee_id, last_name, email, hire_date, job_id, salary) 
+      (employee_id, last_name, email, hire_date, job_id, salary)
    values 
    (employees_seq, 'doe', 'john.doe@example.com', 
        sysdate, 'sh_clerk', 2400) 
@@ -617,7 +701,7 @@ merge_statement:
    when matched then update set d.bonus = bonus 
      delete where (salary > 8000)
    when not matched then insert (d.employee_id, d.bonus) 
-     values (s.employee_id, s.salary) 
+     values (s.employee_id, s.salary)
      where (s.salary <= 8000)>> OK
 <<merge into bonuses d 
    using (select employee_id.* from employees) s 
@@ -625,7 +709,7 @@ merge_statement:
    when matched then update set d.bonus = bonus 
      delete where (salary > 8000)
    when not matched then insert (d.employee_id, d.bonus) 
-     values (s.employee_id, s.salary) 
+     values (s.employee_id, s.salary)
      where (s.salary <= 8000)
    log errors into errlog ('my_bad') reject limit 10>> OK
 
