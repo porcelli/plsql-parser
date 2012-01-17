@@ -2345,6 +2345,10 @@ table_key
     :    SQL92_RESERVED_TABLE
     ;
 
+the_key
+    :    SQL92_RESERVED_THE
+    ;
+
 then_key
     :    SQL92_RESERVED_THEN
     ;

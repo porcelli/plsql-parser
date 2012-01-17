@@ -24,6 +24,24 @@ group_by_clause:
 "group by country_name,prod_name,calendar_year" OK
 
 select_statement:
+<<select
+	"a3"."r_id" "r_id"
+from
+	"pe" "a3",
+	"me" "a2"
+where
+	 "a3"."m_id"="a2"."m_id"
+	 and "a2"."mi_t" =
+	 any
+	 (((
+		select "a4"."sys$"."id"
+		from the
+		(
+                        select "qa"."u_pkg"."getchartable"()
+                        from dual
+                )
+                "a4"
+	)))>> OK
 <<select d.department_id as d_dept_id, e.department_id as e_dept_id, e.last_name
    from departments d full outer join employees e
    on d.department_id = e.department_id

@@ -690,6 +690,10 @@ SQL92_RESERVED_TABLE
     :    'table'
     ;
 
+SQL92_RESERVED_THE
+    :    'the'
+    ;
+
 SQL92_RESERVED_THEN
     :    'then'
     ;
