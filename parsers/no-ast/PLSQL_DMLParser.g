@@ -802,6 +802,10 @@ keep_expression
     ;
 
 unary_expression
+options
+{
+backtrack=true;
+}
     :    MINUS_SIGN unary_expression
     |    PLUS_SIGN unary_expression
     |    prior_key unary_expression
@@ -854,6 +858,10 @@ case_else_part
 // $>
 
 atom
+options
+{
+backtrack=true;
+}
     :    (table_element outer_join_sign) => table_element outer_join_sign
     |    constant
     |    general_element

@@ -60,7 +60,7 @@ query_factoring03.sql OK
 query_factoring04.sql OK
 query_factoring05.sql OK
 query_factoring06.sql OK
-//query_factoring07.sql is failing now
+query_factoring07.sql OK
 query_factoring08.sql OK
 query_factoring09.sql OK
 query_factoring10.sql OK
