@@ -675,7 +675,7 @@ equality_expression
         |    infinite_key
         |    a_key set_key
         |    empty_key
-        |    of_key type_key? LEFT_PAREN type_spec (COMMA type_spec)* RIGHT_PAREN
+        |    of_key type_key? LEFT_PAREN only_key? type_spec (COMMA type_spec)* RIGHT_PAREN
         )
     )*
     ;

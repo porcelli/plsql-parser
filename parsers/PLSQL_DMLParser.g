@@ -843,7 +843,7 @@ equality_expression
         |    empty_key
                 -> {isNegated}? ^(IS_NOT_EMPTY $equality_expression)
                 -> ^(IS_EMPTY $equality_expression)
-        |    of_key type_key? LEFT_PAREN type_spec (COMMA type_spec)* RIGHT_PAREN
+        |    of_key type_key? LEFT_PAREN only_key? type_spec (COMMA type_spec)* RIGHT_PAREN
                 -> {isNegated}? ^(IS_NOT_OF_TYPE $equality_expression type_spec+)
                 -> ^(IS_OF_TYPE $equality_expression type_spec+)
         )
