@@ -64,8 +64,8 @@ subtype_key
     :    {input.LT(1).getText().equalsIgnoreCase("subtype")}? REGULAR_ID
     ;
 
-cursor_key
-    :    {input.LT(1).getText().equalsIgnoreCase("cursor")}? REGULAR_ID
+cursor_key//{input.LT(1).getText().equalsIgnoreCase("cursor")}? REGULAR_ID
+    :    SQL92_RESERVED_CURSOR
     ;
 
 nextval_key
@@ -939,8 +939,8 @@ xml_key
     :    {input.LT(1).getText().equalsIgnoreCase("xml")}?=> REGULAR_ID
     ;
 
-pivot_key
-    :    {(input.LT(1).getText().equalsIgnoreCase("pivot"))}?=> REGULAR_ID
+pivot_key//:    {(input.LT(1).getText().equalsIgnoreCase("pivot"))}?=> REGULAR_ID
+    :     PLSQL_NON_RESERVED_PIVOT
     ;
 
 prior_key
@@ -1020,8 +1020,8 @@ decrement_key
     :    {input.LT(1).getText().equalsIgnoreCase("decrement")}?=> REGULAR_ID
     ;
 
-unpivot_key
-    :    {(input.LT(1).getText().equalsIgnoreCase("unpivot"))}?=> REGULAR_ID
+unpivot_key//:    {(input.LT(1).getText().equalsIgnoreCase("unpivot"))}?=> REGULAR_ID
+    :    PLSQL_NON_RESERVED_UNPIVOT
     ;
 
 keep_key
@@ -1092,6 +1092,10 @@ ignore_key
     :    {input.LT(1).getText().equalsIgnoreCase("ignore")}?=> REGULAR_ID
     ;
 
+respect_key
+    :    {input.LT(1).getText().equalsIgnoreCase("respect")}?=> REGULAR_ID
+    ;
+
 unique_key
     :    SQL92_RESERVED_UNIQUE
     ;
@@ -1102,6 +1106,7 @@ submultiset_key
 
 at_key
     :    {input.LT(1).getText().equalsIgnoreCase("at")}?=> REGULAR_ID
+//    :    SQL92_RESERVED_AT
     ;
 
 a_key
@@ -1182,6 +1187,10 @@ over_key
 
 multiset_key
     :    {input.LT(1).getText().equalsIgnoreCase("multiset")}?=> REGULAR_ID
+    ;
+
+connect_by_root_key
+    :    PLSQL_NON_RESERVED_CONNECT_BY_ROOT
     ;
 
 last_value_key
@@ -1795,7 +1804,8 @@ timestamp_key
     :    {input.LT(1).getText().equalsIgnoreCase("timestamp")}? REGULAR_ID
     ;
 
-date_key:    {input.LT(1).getText().equalsIgnoreCase("date")}?=> REGULAR_ID
+date_key//:    {input.LT(1).getText().equalsIgnoreCase("date")}?=> REGULAR_ID
+    :    SQL92_RESERVED_DATE
     ;
 
 numeric_key
@@ -2137,4 +2147,16 @@ nomaxvalue_key
 
 nominvalue_key
     :   {input.LT(1).getText().equalsIgnoreCase("nominvalue")}? REGULAR_ID
+    ;
+
+search_key
+    :   {input.LT(1).getText().equalsIgnoreCase("search")}? REGULAR_ID
+    ;
+
+depth_key
+    :   {input.LT(1).getText().equalsIgnoreCase("depth")}? REGULAR_ID
+    ;
+
+breadth_key
+    :   {input.LT(1).getText().equalsIgnoreCase("breadth")}? REGULAR_ID
     ;

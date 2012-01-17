@@ -169,6 +169,36 @@ CHAR_STRING
     ;
 //}
 
+// Perl-style quoted string, see Oracle SQL reference, chapter String Literals
+CHAR_STRING_PERL    : ('q'|'Q') ( QS_ANGLE | QS_BRACE | QS_BRACK | QS_PAREN | QS_OTHER) {$type = CHAR_STRING;};
+fragment QUOTE      : '\'' ;
+fragment QS_ANGLE   : QUOTE '<' ( options {greedy=false;} : . )* '>' QUOTE ;
+fragment QS_BRACE   : QUOTE '{' ( options {greedy=false;} : . )* '}' QUOTE ;
+fragment QS_BRACK   : QUOTE '[' ( options {greedy=false;} : . )* ']' QUOTE ;
+fragment QS_PAREN   : QUOTE '(' ( options {greedy=false;} : . )* ')' QUOTE ;
+
+fragment QS_OTHER_CH: ~('<'|'{'|'['|'('|' '|'\t'|'\n'|'\r');
+fragment QS_OTHER
+//    For C target we have to preserve case sensitivity.
+//		@declarations {
+//    		ANTLR3_UINT32 (*oldLA)(struct ANTLR3_INT_STREAM_struct *, ANTLR3_INT32);
+//		}
+//		@init {
+//			oldLA = INPUT->istream->_LA;
+//            INPUT->setUcaseLA(INPUT, ANTLR3_FALSE);
+//		}
+		:
+		QUOTE delimiter=QS_OTHER_CH
+/* JAVA Syntax */
+    ( { input.LT(1) != $delimiter.text.charAt(0) || ( input.LT(1) == $delimiter.text.charAt(0) && input.LT(2) != '\'') }? => . )*
+    ( { input.LT(1) == $delimiter.text.charAt(0) && input.LT(2) == '\'' }? => . ) QUOTE
+/* C Syntax */
+//		( { LA(1) != $delimiter->getText(delimiter)->chars[0] || LA(2) != '\'' }? => . )*
+//		( { LA(1) == $delimiter->getText(delimiter)->chars[0] && LA(2) == '\'' }? => . ) QUOTE
+// 		{ INPUT->istream->_LA = oldLA; }
+		;
+
+
 //{ Rule #163 <DELIMITED_ID>
 DELIMITED_ID
     :    '"' (~('"' | '\r' | '\n') | '"' '"')+ '"' 
@@ -245,6 +275,17 @@ NOT_EQUAL_OP
     |    '<>'
     |    '^='
     |    '~='
+    ;
+CARRET_OPERATOR_PART
+    :    '^'
+    ;
+
+TILDE_OPERATOR_PART
+    :    '~'
+    ;
+
+EXCLAMATION_OPERATOR_PART
+    :    '!'
     ;
 
 GREATER_THAN_OP
@@ -365,9 +406,9 @@ SQL92_RESERVED_ASC
     :    'asc'
     ;
 
-SQL92_RESERVED_AT
-    :    'at'
-    ;
+//SQL92_RESERVED_AT
+//    :    'at'
+//    ;
 
 SQL92_RESERVED_BEGIN
     :    'begin'
@@ -409,6 +450,10 @@ SQL92_RESERVED_CONNECT
     :    'connect'
     ;
 
+PLSQL_NON_RESERVED_CONNECT_BY_ROOT
+    :    'connect_by_root'
+    ;
+
 PLSQL_RESERVED_CRASH
     :    'crash'
     ;
@@ -419,6 +464,14 @@ SQL92_RESERVED_CREATE
 
 SQL92_RESERVED_CURRENT
     :    'current'
+    ;
+
+SQL92_RESERVED_CURSOR
+    :    'cursor'
+    ;
+
+SQL92_RESERVED_DATE
+    :    'date'
     ;
 
 SQL92_RESERVED_DECLARE
@@ -695,6 +748,14 @@ PLSQL_NON_RESERVED_MODEL
 
 PLSQL_NON_RESERVED_ELSIF
     :    'elsif'
+    ;
+
+PLSQL_NON_RESERVED_PIVOT
+    :    'pivot'
+    ;
+
+PLSQL_NON_RESERVED_UNPIVOT
+    :    'unpivot'
     ;
 
 REGULAR_ID

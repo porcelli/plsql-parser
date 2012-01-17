@@ -55,6 +55,7 @@ parser grammar PLSQL_DMLParser;
         String functionName = originalFunctionName.toLowerCase();
         if (functionName.equals("cume_dist")
                 || functionName.equals("dense_rank")
+                || functionName.equals("listagg")
                 || functionName.equals("percent_rank")
                 || functionName.equals("percentile_cont")
                 || functionName.equals("percentile_disc")
@@ -121,7 +122,20 @@ subquery_factoring_clause
     ;
 
 factoring_element
-    :    query_name as_key LEFT_PAREN subquery RIGHT_PAREN
+    :    query_name (LEFT_PAREN column_name (COMMA column_name)* RIGHT_PAREN)? as_key LEFT_PAREN subquery RIGHT_PAREN
+         search_clause?
+         cycle_clause?
+    ;
+
+search_clause
+    :    search_key ( depth_key | breadth_key ) first_key by_key
+             column_name asc_key ? desc_key ? (nulls_key first_key)? (nulls_key last_key)?
+             (COMMA column_name asc_key ? desc_key ? (nulls_key first_key)? (nulls_key last_key)? )*
+             set_key column_name
+    ;
+
+cycle_clause
+    :    cycle_key column_name ( COMMA column_name)* set_key column_name to_key expression default_key expression
     ;
 
 subquery
@@ -173,8 +187,10 @@ table_ref
 
 table_ref_aux
     :
-    (    dml_table_expression_clause (pivot_clause|unpivot_clause)?
-    |    only_key LEFT_PAREN dml_table_expression_clause RIGHT_PAREN
+    (    (LEFT_PAREN (select_key|with_key)) => dml_table_expression_clause (pivot_clause|unique_key)?
+    |    (LEFT_PAREN) => LEFT_PAREN table_ref RIGHT_PAREN
+    |    (only_key LEFT_PAREN) => only_key LEFT_PAREN dml_table_expression_clause RIGHT_PAREN
+    |    dml_table_expression_clause (pivot_clause|unpivot_clause)?
     )
         flashback_query_clause*
         ({isTableAlias()}? alias)?
@@ -187,7 +203,7 @@ join_clause
         query_partition_clause?
     (    join_on_part
     |    join_using_part
-    )?
+    )*
     ;
 
 join_on_part
@@ -591,8 +607,9 @@ dml_table_expression_clause
 
 table_collection_expression
     :    table_key
-        LEFT_PAREN expression RIGHT_PAREN  
-        (LEFT_PAREN PLUS_SIGN RIGHT_PAREN)?
+         ( (LEFT_PAREN (select_key | with_key)) => LEFT_PAREN subquery RIGHT_PAREN
+         | LEFT_PAREN expression RIGHT_PAREN //(LEFT_PAREN PLUS_SIGN RIGHT_PAREN)?
+         )
     ;
 
 subquery_restriction_clause
@@ -615,6 +632,9 @@ seed_part
 // $>
 
 // $<Expression & Condition
+cursor_expression
+    :    cursor_key LEFT_PAREN subquery RIGHT_PAREN
+    ;
 
 expression_list
     :    LEFT_PAREN expression? (COMMA expression)* RIGHT_PAREN
@@ -629,7 +649,8 @@ condition_wrapper
     ;
 
 expression
-    :    logical_and_expression ( or_key logical_and_expression )*    
+    :    (cursor_key LEFT_PAREN (select_key|with_key)) => cursor_expression
+    |    logical_and_expression ( or_key logical_and_expression )*
     ;
 
 expression_wrapper
@@ -672,7 +693,7 @@ multiset_type
 
 relational_expression
     :    compound_expression
-    ( ( EQUALS_OP | NOT_EQUAL_OP | LESS_THAN_OP | GREATER_THAN_OP | LESS_THAN_OR_EQUALS_OP | GREATER_THAN_OR_EQUALS_OP ) compound_expression)*
+    ( ( EQUALS_OP | not_equal_op | LESS_THAN_OP | GREATER_THAN_OP | less_than_or_equals_op | greater_than_or_equals_op ) compound_expression)*
     ;
 
 compound_expression
@@ -697,7 +718,9 @@ like_escape_part
     ;
 
 in_elements
-    :    LEFT_PAREN ((select_key)=> subquery | concatenation_wrapper (COMMA concatenation_wrapper)* ) RIGHT_PAREN
+    :    (LEFT_PAREN+ (select_key|with_key)) => LEFT_PAREN subquery RIGHT_PAREN
+    |    LEFT_PAREN concatenation_wrapper (COMMA concatenation_wrapper)* RIGHT_PAREN
+    |    constant
     ;
 
 between_elements
@@ -705,7 +728,7 @@ between_elements
     ;
 
 concatenation
-    :    additive_expression (CONCATENATION_OP additive_expression)*
+    :    additive_expression (concatenation_op additive_expression)*
     ;
 
 concatenation_wrapper
@@ -782,6 +805,7 @@ unary_expression
     :    MINUS_SIGN unary_expression
     |    PLUS_SIGN unary_expression
     |    prior_key unary_expression
+    |    connect_by_root_key unary_expression
     |    {input.LT(1).getText().equalsIgnoreCase("new") && !input.LT(2).getText().equals(".")}?=> new_key unary_expression
     |    distinct_key unary_expression
     |    all_key unary_expression
@@ -830,7 +854,8 @@ case_else_part
 // $>
 
 atom
-    :    constant
+    :    (table_element outer_join_sign) => table_element outer_join_sign
+    |    constant
     |    general_element
     |    LEFT_PAREN ((select_key)=> subquery|expression_or_vector) RIGHT_PAREN
     ;
@@ -844,20 +869,25 @@ vector_expr
     ;
 
 quantified_expression
-    :    ( some_key | exists_key | all_key | any_key ) 
-        LEFT_PAREN expression_wrapper RIGHT_PAREN
+    :    ( some_key | exists_key | all_key | any_key )
+         ( (LEFT_PAREN select_key) => LEFT_PAREN query_block RIGHT_PAREN
+           | LEFT_PAREN expression_wrapper RIGHT_PAREN
+         )
     ;
 
 standard_function
-    :    stantard_function_enabling_over function_argument over_clause?
-    |    stantard_function_enabling_using function_argument using_clause?
+    :    stantard_function_enabling_over function_argument_analytic over_clause?
+    |    stantard_function_enabling_using function_argument_analytic using_clause?
     |    count_key
             LEFT_PAREN
                 ( ASTERISK | concatenation_wrapper ) 
             RIGHT_PAREN over_clause?
     |    (cast_key|xmlcast_key) 
             LEFT_PAREN
-                (multiset_key LEFT_PAREN subquery RIGHT_PAREN|concatenation_wrapper) as_key type_spec 
+                ( (multiset_key LEFT_PAREN (select_key|with_key)) => multiset_key LEFT_PAREN subquery RIGHT_PAREN
+                | concatenation_wrapper
+                )
+                as_key type_spec
             RIGHT_PAREN
     |    chr_key
             LEFT_PAREN 
@@ -865,7 +895,7 @@ standard_function
             RIGHT_PAREN
     |    collect_key
             LEFT_PAREN 
-                (distinct_key|unique_key)? column_name collect_order_by_part?
+                (distinct_key|unique_key)? concatenation_wrapper collect_order_by_part?
             RIGHT_PAREN
     |    stantard_function_enabling_within_or_over 
             function_argument within_or_over_part+
@@ -877,10 +907,8 @@ standard_function
             LEFT_PAREN
                 REGULAR_ID from_key concatenation_wrapper 
             RIGHT_PAREN
-    |    (first_value_key|last_value_key) 
-            LEFT_PAREN
-                concatenation_wrapper (ignore_key nulls_key)? 
-            RIGHT_PAREN over_clause
+    |    (first_value_key|last_value_key) function_argument_analytic
+             respect_or_ignore_nulls? over_clause
     |    stantard_function_pedictions
             LEFT_PAREN
                 expression_wrapper (COMMA expression_wrapper)* cost_matrix_clause? using_clause? 
@@ -896,7 +924,8 @@ standard_function
             RIGHT_PAREN
     |    trim_key
             LEFT_PAREN 
-                ((leading_key|trailing_key|both_key)? concatenation_wrapper from_key)? concatenation_wrapper 
+                ((leading_key|trailing_key|both_key)? quoted_string? from_key)?
+                concatenation_wrapper
             RIGHT_PAREN
     |    xmlagg_key
             LEFT_PAREN 

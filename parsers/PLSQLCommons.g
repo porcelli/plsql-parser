@@ -79,8 +79,13 @@ partition_extension_clause
     ;
 
 alias
+options
+{
+backtrack=true;
+}
     :    as_key? (id|alias_quoted_string)
     ->    ^(ALIAS id? alias_quoted_string?)
+    |    as_key
     ;
 
 alias_quoted_string
@@ -227,6 +232,8 @@ variable_name
             id_expression (((PERIOD|COLON) id_expression)=> (PERIOD|COLON) id_expression)?
         ->{isHosted}? ^(HOSTED_VARIABLE_NAME char_set_name? id_expression*)
         -> ^(VARIABLE_NAME char_set_name? id_expression*)
+    |    (COLON UNSIGNED_INTEGER)
+        -> ^(HOSTED_VARIABLE_NAME UNSIGNED_INTEGER)
     ;
 
 index_name
@@ -281,6 +288,18 @@ function_argument
             argument? (COMMA argument )* 
         RIGHT_PAREN
         -> ^(ARGUMENTS argument*)
+    ;
+
+function_argument_analytic
+    :    LEFT_PAREN
+            (argument respect_or_ignore_nulls?)?
+            (COMMA argument respect_or_ignore_nulls? )*
+         RIGHT_PAREN
+         -> ^(ARGUMENTS argument*)
+    ;
+
+respect_or_ignore_nulls
+    :    (respect_key | ignore_key) nulls_key
     ;
 
 argument
@@ -384,6 +403,13 @@ general_element_part
         ->{isHosted && !isRoutineCall}? ^(HOSTED_VARIABLE char_set_name? id_expression+)
         ->{!isHosted && isRoutineCall}? ^(ROUTINE_CALL ^(ROUTINE_NAME char_set_name? id_expression+) function_argument)
         -> ^(ANY_ELEMENT char_set_name? id_expression+)
+        | (COLON UNSIGNED_INTEGER)
+        -> ^(HOSTED_VARIABLE COLON UNSIGNED_INTEGER)
+    ;
+
+table_element
+    :    (INTRODUCER char_set_name)? id_expression (PERIOD id_expression)*
+         -> ^(ANY_ELEMENT char_set_name? id_expression+)
     ;
 
 // $>
@@ -391,7 +417,9 @@ general_element_part
 // $<Lexer Mappings
 
 constant
-    :    numeric
+    :    timestamp_key quoted_string (at_key time_key zone_key quoted_string)?
+    |    numeric
+    |    date_key quoted_string
     |    quoted_string
     |    null_key
     |    true_key
@@ -410,6 +438,8 @@ numeric
 
 quoted_string
     :    CHAR_STRING
+    |    CHAR_STRING_PERL
+    |    NATIONAL_CHAR_STRING_LIT
     ;
 
 id
@@ -422,4 +452,31 @@ id_expression
     :    REGULAR_ID ->    ID[$REGULAR_ID]
     |    DELIMITED_ID ->    ID[$DELIMITED_ID] 
     ;
+
+not_equal_op
+    :    NOT_EQUAL_OP
+    |    LESS_THAN_OP GREATER_THAN_OP
+    |    EXCLAMATION_OPERATOR_PART EQUALS_OP
+    |    CARRET_OPERATOR_PART EQUALS_OP
+    ;
+
+greater_than_or_equals_op
+    :    GREATER_THAN_OR_EQUALS_OP
+    |    GREATER_THAN_OP EQUALS_OP
+    ;
+
+less_than_or_equals_op
+    :    LESS_THAN_OR_EQUALS_OP
+    |    LESS_THAN_OP EQUALS_OP
+    ;
+
+concatenation_op
+    :    CONCATENATION_OP
+    |    VERTICAL_BAR VERTICAL_BAR
+    ;
+
+outer_join_sign
+    :    LEFT_PAREN PLUS_SIGN RIGHT_PAREN
+    ;
+
 // $>
