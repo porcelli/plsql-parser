@@ -161,6 +161,26 @@
                         </configuration>
                     </execution>
                     <execution>
+                        <id>lexer-parser-copy-resources-tests</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <overwrite>true</overwrite>
+                            <outputDirectory>${basedir}/lexer-parser/src/test/gunit/br/com/porcelli/parser/plsql</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${basedir}/tests/</directory>
+                                    <filtering>true</filtering>
+                                    <includes>
+                                      <include>*.sql</include>
+                                    </includes>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                    <execution>
                         <id>lexer-parser-walker-copy-resources-imports</id>
                         <phase>validate</phase>
                         <goals>
