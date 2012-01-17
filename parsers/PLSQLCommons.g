@@ -298,6 +298,18 @@ function_argument_analytic
          -> ^(ARGUMENTS argument*)
     ;
 
+function_argument_modeling
+    :    LEFT_PAREN
+            column_name (COMMA (numeric|null_key) (COMMA (numeric|null_key) )? )?
+            using_key
+                ( (tableview_name PERIOD ASTERISK)=> tableview_name PERIOD ASTERISK
+                | ASTERISK
+                | expression alias? (COMMA expression alias?)*
+                )
+         RIGHT_PAREN
+         -> ^(ARGUMENTS column_name)
+    ;
+
 respect_or_ignore_nulls
     :    (respect_key | ignore_key) nulls_key
     ;

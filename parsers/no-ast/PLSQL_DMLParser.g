@@ -877,7 +877,7 @@ quantified_expression
 
 standard_function
     :    stantard_function_enabling_over function_argument_analytic over_clause?
-    |    stantard_function_enabling_using function_argument_analytic using_clause?
+    |    stantard_function_enabling_using function_argument_modeling using_clause?
     |    count_key
             LEFT_PAREN
                 ( ASTERISK | concatenation_wrapper ) 
