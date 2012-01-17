@@ -53,13 +53,14 @@
                 <configuration>
                     <executable>java</executable>
                     <arguments>
-                        <argument>-Xmx256M</argument>
+                        <argument>-Xmx1g</argument>
                         <argument>-classpath</argument>
                         <classpath/>
                         <argument>org.antlr.Tool</argument>
                         <argument>-o</argument>
                         <argument>${project.build.directory}/generated-sources/antlr3/br/com/porcelli/parser/plsql/
                         </argument>
+			<argument>-Xmultithreaded</argument>
                         <argument>-lib</argument>
                         <argument>${project.basedir}/src/main/antlr3/br/com/porcelli/parser/plsql/imports/</argument>
                         <argument>${project.basedir}/src/main/antlr3/br/com/porcelli/parser/plsql/PLSQLLexer.g
