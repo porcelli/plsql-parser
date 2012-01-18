@@ -105,6 +105,8 @@ cast_multiset07.sql OK
 lexer01.sql OK
 lexer02.sql OK
 lexer03.sql OK
+lexer04.sql OK
+lexer05.sql OK
 columns01.sql OK
 //bindvar01.sql OK insert
 bindvar02.sql OK
