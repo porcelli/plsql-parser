@@ -771,9 +771,9 @@ subquery_restriction_clause
 
 sample_clause
     :    sample_key block_key? 
-        LEFT_PAREN expression RIGHT_PAREN
+        LEFT_PAREN e1=expression (COMMA e2=expression)? RIGHT_PAREN
         seed_part?
-        -> ^(sample_key block_key? ^(EXPR expression) seed_part?) 
+        -> ^(sample_key block_key? ^(EXPR $e1) ^(EXPR $e2)? seed_part?)
     ;
 
 seed_part

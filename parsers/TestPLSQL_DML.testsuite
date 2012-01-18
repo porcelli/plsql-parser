@@ -158,6 +158,7 @@ simple11.sql OK
 simple12.sql OK
 simple13.sql OK
 //object_access01.sql OK fails ATM
+sample01.sql OK
 
 "select * from tablex, tabley" OK
 <<with

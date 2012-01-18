@@ -621,7 +621,7 @@ subquery_restriction_clause
 
 sample_clause
     :    sample_key block_key? 
-        LEFT_PAREN expression RIGHT_PAREN
+        LEFT_PAREN expression (COMMA expression)? RIGHT_PAREN
         seed_part?
     ;
 
