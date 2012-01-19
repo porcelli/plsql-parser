@@ -682,9 +682,9 @@ SQL92_RESERVED_SIZE
     :    'size'
     ;
 
-SQL92_RESERVED_SQL
-    :    'sql'
-    ;
+// SQL92_RESERVED_SQL
+//     :    'sql'
+//     ;
 
 PLSQL_RESERVED_START
     :    'start'
