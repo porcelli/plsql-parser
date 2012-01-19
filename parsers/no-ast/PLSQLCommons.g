@@ -149,9 +149,9 @@ trigger_name
     ;
 
 variable_name
-    :    COLON? (INTRODUCER char_set_name)?
-            id_expression (((PERIOD|COLON) id_expression)=> (PERIOD|COLON) id_expression)?
-    |    COLON UNSIGNED_INTEGER
+    :    (INTRODUCER char_set_name)?
+            id_expression ((PERIOD id_expression)=> PERIOD id_expression)?
+    |    bind_variable
     ;
 
 index_name
@@ -160,10 +160,12 @@ index_name
 
 cursor_name
     :    id
+    |    bind_variable
     ;
 
 record_name
     :    id
+    |    bind_variable
     ;
 
 collection_name
@@ -302,13 +304,12 @@ native_datatype_element
     ;
 
 general_element
-    :    general_element_part (((PERIOD|COLON) general_element_part)=> (PERIOD|COLON) general_element_part)*
+    :    general_element_part ((PERIOD general_element_part)=> PERIOD general_element_part)*
     ;
 
 general_element_part
-    :    (INTRODUCER char_set_name)? COLON? id_expression 
-            (((PERIOD|COLON) id_expression)=> (PERIOD|COLON) id_expression)* function_argument?
-    |    COLON UNSIGNED_INTEGER
+    :    (INTRODUCER char_set_name)? id_expression
+            ((PERIOD id_expression)=> PERIOD id_expression)* function_argument?
     ;
 
 table_element
@@ -320,8 +321,8 @@ table_element
 // $<Lexer Mappings
 
 constant
-    :    timestamp_key quoted_string (at_key time_key zone_key quoted_string)?
-    |    interval_key (quoted_string | general_element_part)
+    :    timestamp_key (quoted_string | bind_variable) (at_key time_key zone_key quoted_string)?
+    |    interval_key (quoted_string | bind_variable | general_element_part)
          ( day_key | hour_key | minute_key | second_key)
          ( LEFT_PAREN UNSIGNED_INTEGER (COMMA UNSIGNED_INTEGER)? RIGHT_PAREN)?
          ( to_key
@@ -385,6 +386,11 @@ concatenation_op
 
 outer_join_sign
     :    LEFT_PAREN PLUS_SIGN RIGHT_PAREN
+    ;
+
+bind_variable
+    :    ( BINDVAR | COLON UNSIGNED_INTEGER)
+         ( indicator_key (BINDVAR | COLON UNSIGNED_INTEGER))?
     ;
 
 // $>

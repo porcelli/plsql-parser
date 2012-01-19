@@ -1302,7 +1302,7 @@ cursor_manipulation_statements
     ;
 
 close_statement
-    :     close_key^ variable_name 
+    :     close_key^ cursor_name
     ;
 
 open_statement

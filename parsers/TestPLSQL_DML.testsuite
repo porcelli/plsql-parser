@@ -407,13 +407,15 @@ select*from table_3
  union 
 select*from table_4>>
     OK
-"select a,b into :VarA,:FrmA.FieldB,: _WIN12503 cc from table_1" OK
+"select a,b into :VarA,:FrmA_FieldB,:cc_ from table_1" OK
 
 "select A from (select B from (select C from d) cross join table_b b)" OK
 "select 0 from (select B from (select * from C) cross join table_b as b)" OK
 
-"select * from a where a<> : Var1" OK
-"select * from b where a<=:frmF1.clsC1.dfDF1.instI1 --EXF4" OK
+"select * from a where a<> :Var1" OK
+"select * from a where a<> : 11" OK
+<<select * from a where a<> :"11">> OK
+"select * from b where a<=:frmF1_clsC1_dfDF1_instI1 --EXF4" OK
 "select*from c where a>aa" OK
 
 insert_statement:

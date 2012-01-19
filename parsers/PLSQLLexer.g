@@ -250,6 +250,14 @@ ASSIGN_OP
     :    ':='
     ;
 
+// TODO remove DOT from this rule. ":new.attr" is in fact access to record's field
+BINDVAR
+    :	COLON SIMPLE_LETTER  ( SIMPLE_LETTER | '0' .. '9' | '_' | '.' )*
+    |	COLON DELIMITED_ID
+    |	COLON UNSIGNED_INTEGER
+//  | '?' // not in SQL, not in Oracle, not in OCI, use this for JDBC
+    ;
+
 COLON
     :    ':'
     ;

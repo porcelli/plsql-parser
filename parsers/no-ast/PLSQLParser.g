@@ -999,8 +999,8 @@ data_manipulation_language_statements
     :    merge_statement
     |    lock_table_statement
     |    select_statement
-    |     update_statement
-    |     delete_statement
+    |    update_statement
+    |    delete_statement
     |    insert_statement
     ;
 
@@ -1016,7 +1016,7 @@ cursor_manipulation_statements
     ;
 
 close_statement
-    :     close_key variable_name 
+    :     close_key cursor_name
     ;
 
 open_statement

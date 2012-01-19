@@ -227,13 +227,11 @@ trigger_name
     ;
 
 variable_name
-@init    {    boolean isHosted = false;    }
-    :    (COLON {isHosted = true;})? (INTRODUCER char_set_name)?
-            id_expression (((PERIOD|COLON) id_expression)=> (PERIOD|COLON) id_expression)?
-        ->{isHosted}? ^(HOSTED_VARIABLE_NAME char_set_name? id_expression*)
+    :    (INTRODUCER char_set_name)?
+            id_expression ((PERIOD id_expression)=> PERIOD id_expression)?
         -> ^(VARIABLE_NAME char_set_name? id_expression*)
-    |    (COLON UNSIGNED_INTEGER)
-        -> ^(HOSTED_VARIABLE_NAME UNSIGNED_INTEGER)
+    |    bind_variable
+        -> ^(HOSTED_VARIABLE_NAME bind_variable)
     ;
 
 index_name
@@ -242,12 +240,12 @@ index_name
     ;
 
 cursor_name
-    :    id
-        -> ^(CURSOR_NAME id)
+    :    (id | bind_variable)
+        -> ^(CURSOR_NAME id? bind_variable?)
     ;
 
 record_name
-    :    id
+    :    (id | bind_variable)
         ->^(RECORD_NAME id)
     ;
 
@@ -401,22 +399,18 @@ native_datatype_element
     ;
 
 general_element
-@init    {    boolean isCascated = true;    }
-    :    general_element_part (((PERIOD|COLON) general_element_part)=> (PERIOD|COLON) general_element_part {isCascated = true;})*
+@init    { boolean isCascated = true; }
+    :    general_element_part ((PERIOD general_element_part)=> PERIOD general_element_part {isCascated = true;})*
         ->{isCascated}? ^(CASCATED_ELEMENT general_element_part+)
         -> general_element_part
     ;
 
 general_element_part
-@init    {    boolean isHosted = false; boolean isRoutineCall = false;    }
-    :    (INTRODUCER char_set_name)? (COLON {isHosted = true;})? id_expression 
-            (((PERIOD|COLON) id_expression)=> (PERIOD|COLON) id_expression)* (function_argument {isRoutineCall = true;})?
-        ->{isHosted && isRoutineCall}? ^(HOSTED_VARIABLE_ROUTINE_CALL ^(ROUTINE_NAME char_set_name? id_expression+) function_argument)
-        ->{isHosted && !isRoutineCall}? ^(HOSTED_VARIABLE char_set_name? id_expression+)
-        ->{!isHosted && isRoutineCall}? ^(ROUTINE_CALL ^(ROUTINE_NAME char_set_name? id_expression+) function_argument)
+@init    { boolean isRoutineCall = false; }
+    :    (INTRODUCER char_set_name)? id_expression
+            ((PERIOD id_expression)=> PERIOD id_expression)* (function_argument {isRoutineCall = true;})?
+        ->{isRoutineCall}? ^(ROUTINE_CALL ^(ROUTINE_NAME char_set_name? id_expression+) function_argument)
         -> ^(ANY_ELEMENT char_set_name? id_expression+)
-        | (COLON UNSIGNED_INTEGER)
-        -> ^(HOSTED_VARIABLE COLON UNSIGNED_INTEGER)
     ;
 
 table_element
@@ -429,7 +423,8 @@ table_element
 // $<Lexer Mappings
 
 constant
-    :    timestamp_key quoted_string (at_key time_key zone_key quoted_string)?
+    :    timestamp_key (quoted_string | bind_variable) (at_key time_key zone_key quoted_string)?
+    |    interval_key (quoted_string | bind_variable | general_element_part)
     |    numeric
     |    date_key quoted_string
     |    quoted_string
@@ -489,6 +484,12 @@ concatenation_op
 
 outer_join_sign
     :    LEFT_PAREN PLUS_SIGN RIGHT_PAREN
+    ;
+
+bind_variable
+    :    ( b1=BINDVAR | COLON u1=UNSIGNED_INTEGER)
+         ( indicator_key (b2=BINDVAR | COLON u2=UNSIGNED_INTEGER))?
+         ->^(HOSTED_VARIABLE_NAME $b1? $u1? indicator_key? $b2? $u2?)
     ;
 
 // $>
