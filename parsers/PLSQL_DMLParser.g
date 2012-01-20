@@ -651,7 +651,12 @@ values_clause
 merge_statement
     :    merge_key into_key tableview_name alias?
         using_key selected_tableview on_key LEFT_PAREN condition RIGHT_PAREN
-        merge_update_clause? merge_insert_clause? error_logging_clause?
+        (
+            (when_key matched_key) => merge_update_clause merge_insert_clause?
+        |
+            (when_key not_key matched_key) => merge_insert_clause merge_update_clause?
+        )?
+        error_logging_clause?
         -> ^(merge_key alias? tableview_name ^(using_key selected_tableview ^(LOGIC_EXPR condition))
                  merge_update_clause? merge_insert_clause? error_logging_clause?)
     ;

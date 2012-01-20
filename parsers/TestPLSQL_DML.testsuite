@@ -571,23 +571,9 @@ update_statement:
    returning salary into :bnd1>>  OK
 
 merge_statement:
-<<merge into bonuses d 
-   using (select employee_id.* from employees) s 
-   on (employee_id = a) 
-   when matched then update set d.bonus = bonus 
-     delete where (salary > 8000)
-   when not matched then insert (d.employee_id, d.bonus) 
-     values (s.employee_id, s.salary)
-     where (s.salary <= 8000)>> OK
-<<merge into bonuses d 
-   using (select employee_id.* from employees) s 
-   on (employee_id = a) 
-   when matched then update set d.bonus = bonus 
-     delete where (salary > 8000)
-   when not matched then insert (d.employee_id, d.bonus) 
-     values (s.employee_id, s.salary)
-     where (s.salary <= 8000)
-   log errors into errlog ('my_bad') reject limit 10>> OK
+merge01.sql
+merge02.sql
+merge03.sql
 
 lock_table_statement:
 <<lock table employees 
