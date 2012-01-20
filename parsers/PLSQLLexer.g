@@ -154,11 +154,14 @@ PERIOD
 //  Rule #501 <signed_integer> was incorporated directly in the token <APPROXIMATE_NUM_LIT>
 //  See also the rule #617 <unsigned_num_lit>
 EXACT_NUM_LIT
-    :    UNSIGNED_INTEGER
+    : (
+            UNSIGNED_INTEGER
             ( '.' UNSIGNED_INTEGER
             |    {$type = UNSIGNED_INTEGER;}
             ) ( ('E' | 'e') ('+' | '-')? UNSIGNED_INTEGER {$type = APPROXIMATE_NUM_LIT;} )?
     |    '.' UNSIGNED_INTEGER ( ('E' | 'e') ('+' | '-')? UNSIGNED_INTEGER {$type = APPROXIMATE_NUM_LIT;} )?
+    )
+    ( 'D' | 'd' | 'f' | 'F')?
     ;
 //}
 
