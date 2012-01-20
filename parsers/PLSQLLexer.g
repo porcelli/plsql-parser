@@ -772,7 +772,7 @@ PLSQL_NON_RESERVED_UNPIVOT
     ;
 
 REGULAR_ID
-    :    (SIMPLE_LETTER) (SIMPLE_LETTER | '_' | '$' | '#' | ':' | '0'..'9')*
+    :    (SIMPLE_LETTER) (SIMPLE_LETTER | '$' | '_' | '#' | '0'..'9')*
     ;
 
 ZV
