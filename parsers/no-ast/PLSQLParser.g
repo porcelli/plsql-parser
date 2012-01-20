@@ -21,7 +21,7 @@ options {
     tokenVocab=PLSQLLexer;
 }
 
-import PLSQLKeys, PLSQLCommons, PLSQL_DMLParser;
+import PLSQLKeys, PLSQLCommons, PLSQL_DMLParser, SQLPLUSParser;
 
 @header {
 /**
@@ -54,13 +54,7 @@ compilation_unit
     ;
 
 sql_script
-    :    serveroutput_declaration?
-        seq_of_statements
-        exit_key? EOF
-    ;
-
-serveroutput_declaration
-    :    set_key serveroutput_key (on_key|off_key) SEMICOLON?
+    :   (unit_statement|sql_plus_command)* EOF
     ;
 
 unit_statement

@@ -371,6 +371,15 @@ COMMENT
     ;
 //}
 
+// SQL*Plus prompt
+// TODO should be grammar rule, but tricky to implement
+PROMPT
+	: 'prompt' ( ~('\r' | '\n') )* (NEWLINE|EOF)
+	;
+//}
+
+
+
 //{ Rule #360 <NEWLINE>
 fragment
 NEWLINE
