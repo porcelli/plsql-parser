@@ -401,7 +401,8 @@ native_datatype_element
 bind_variable
     :    ( b1=BINDVAR | COLON u1=UNSIGNED_INTEGER)
          ( indicator_key? (b2=BINDVAR | COLON u2=UNSIGNED_INTEGER))?
-         ->^(HOSTED_VARIABLE_NAME $b1? $u1? indicator_key? $b2? $u2?)
+         ((PERIOD general_element_part)=> PERIOD general_element_part)*
+         ->^(HOSTED_VARIABLE_NAME $b1? $u1? indicator_key? $b2? $u2? general_element_part*)
     ;
 
 general_element

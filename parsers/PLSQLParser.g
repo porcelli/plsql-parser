@@ -1121,8 +1121,8 @@ backtrack=true;
     ;
 
 assignment_statement
-    :     general_element ASSIGN_OP expression
-        -> ^(ASSIGN[$ASSIGN_OP] general_element ^(EXPR expression))
+    :     (general_element|bind_variable) ASSIGN_OP expression
+        -> ^(ASSIGN[$ASSIGN_OP] general_element? bind_variable? ^(EXPR expression))
     ;
 
 continue_statement

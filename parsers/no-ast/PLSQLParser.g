@@ -860,7 +860,7 @@ backtrack=true;
     ;
 
 assignment_statement
-    :     general_element ASSIGN_OP expression
+    :     (general_element|bind_variable) ASSIGN_OP expression
     ;
 
 continue_statement

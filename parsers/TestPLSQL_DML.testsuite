@@ -119,8 +119,9 @@ union03.sql OK
 union04.sql OK
 union05.sql OK
 union06.sql OK
-union07.sql OK
+//union07.sql OK
 union08.sql OK
+//union09.sql OK
 connect_by01.sql OK
 connect_by02.sql OK
 connect_by03.sql OK

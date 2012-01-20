@@ -250,12 +250,12 @@ ASSIGN_OP
     :    ':='
     ;
 
-// TODO remove DOT from this rule. ":new.attr" is in fact access to record's field
+// See OCI reference for more information about this
 BINDVAR
-    :	COLON SIMPLE_LETTER  ( SIMPLE_LETTER | '0' .. '9' | '_' | '.' )*
-    |	COLON DELIMITED_ID
-    |	COLON UNSIGNED_INTEGER
-//  | '?' // not in SQL, not in Oracle, not in OCI, use this for JDBC
+    :    COLON SIMPLE_LETTER  ( SIMPLE_LETTER | '0' .. '9' | '_' )*
+    |    COLON DELIMITED_ID  // not used in SQL but spotted in v$sqltext when using cursor_sharing
+    |    COLON UNSIGNED_INTEGER
+    |    QUESTION_MARK // not in SQL, not in Oracle, not in OCI, use this for JDBC
     ;
 
 COLON
@@ -300,6 +300,7 @@ GREATER_THAN_OP
     :    '>'
     ;
 
+fragment
 QUESTION_MARK
     :    '?'
     ;
