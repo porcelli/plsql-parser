@@ -144,6 +144,10 @@ package br.com.porcelli.parser.plsql;
 
 }
 
+swallow_to_semi
+    :    ~( SEMICOLON )+
+    ;
+
 compilation_unit
     :    unit_statement* EOF
         -> ^(COMPILATION_UNIT unit_statement*)
@@ -1082,7 +1086,7 @@ table_var_dec
 // $<PL/SQL Statements
 
 seq_of_statements
-    :     (statement SEMICOLON|label_declaration)+
+    :     (statement (SEMICOLON|EOF)|label_declaration)+
         -> ^(STATEMENTS label_declaration* statement*)
     ;  
 
@@ -1094,7 +1098,12 @@ label_declaration
 statement
 options{
 backtrack=true;
-}    :    assignment_statement
+}
+    :    create_key swallow_to_semi (SEMICOLON|EOF)
+    |    alter_key swallow_to_semi  (SEMICOLON|EOF)
+    |    grant_key swallow_to_semi  (SEMICOLON|EOF)
+    |    truncate_key swallow_to_semi  (SEMICOLON|EOF)
+    |    assignment_statement
     |    continue_statement
     |    exit_statement
     |    goto_statement
