@@ -303,6 +303,12 @@ native_datatype_element
     |    mlslabel_key
     ;
 
+bind_variable
+    :    ( BINDVAR | COLON UNSIGNED_INTEGER)
+         ( indicator_key? (BINDVAR | COLON UNSIGNED_INTEGER))?
+         ((PERIOD general_element_part)=> PERIOD general_element_part)*
+    ;
+
 general_element
     :    general_element_part ((PERIOD general_element_part)=> PERIOD general_element_part)*
     ;
@@ -324,9 +330,9 @@ constant
     :    timestamp_key (quoted_string | bind_variable) (at_key time_key zone_key quoted_string)?
     |    interval_key (quoted_string | bind_variable | general_element_part)
          ( day_key | hour_key | minute_key | second_key)
-         ( LEFT_PAREN UNSIGNED_INTEGER (COMMA UNSIGNED_INTEGER)? RIGHT_PAREN)?
+         ( LEFT_PAREN (UNSIGNED_INTEGER | bind_variable) (COMMA (UNSIGNED_INTEGER | bind_variable) )? RIGHT_PAREN)?
          ( to_key
-             ( day_key | hour_key | minute_key | second_key (LEFT_PAREN UNSIGNED_INTEGER RIGHT_PAREN)? )
+             ( day_key | hour_key | minute_key | second_key (LEFT_PAREN (UNSIGNED_INTEGER | bind_variable) RIGHT_PAREN)? )
          )?
     |    numeric
     |    date_key quoted_string
@@ -386,11 +392,6 @@ concatenation_op
 
 outer_join_sign
     :    LEFT_PAREN PLUS_SIGN RIGHT_PAREN
-    ;
-
-bind_variable
-    :    ( BINDVAR | COLON UNSIGNED_INTEGER)
-         ( indicator_key (BINDVAR | COLON UNSIGNED_INTEGER))?
     ;
 
 // $>

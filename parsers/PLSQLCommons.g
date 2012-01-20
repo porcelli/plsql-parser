@@ -398,6 +398,12 @@ native_datatype_element
     |    mlslabel_key
     ;
 
+bind_variable
+    :    ( b1=BINDVAR | COLON u1=UNSIGNED_INTEGER)
+         ( indicator_key? (b2=BINDVAR | COLON u2=UNSIGNED_INTEGER))?
+         ->^(HOSTED_VARIABLE_NAME $b1? $u1? indicator_key? $b2? $u2?)
+    ;
+
 general_element
 @init    { boolean isCascated = true; }
     :    general_element_part ((PERIOD general_element_part)=> PERIOD general_element_part {isCascated = true;})*
@@ -425,6 +431,11 @@ table_element
 constant
     :    timestamp_key (quoted_string | bind_variable) (at_key time_key zone_key quoted_string)?
     |    interval_key (quoted_string | bind_variable | general_element_part)
+         ( day_key | hour_key | minute_key | second_key)
+         ( LEFT_PAREN (UNSIGNED_INTEGER | bind_variable) (COMMA (UNSIGNED_INTEGER | bind_variable) )? RIGHT_PAREN)?
+         ( to_key
+             ( day_key | hour_key | minute_key | second_key (LEFT_PAREN (UNSIGNED_INTEGER | bind_variable) RIGHT_PAREN)? )
+         )?
     |    numeric
     |    date_key quoted_string
     |    quoted_string
@@ -484,12 +495,6 @@ concatenation_op
 
 outer_join_sign
     :    LEFT_PAREN PLUS_SIGN RIGHT_PAREN
-    ;
-
-bind_variable
-    :    ( b1=BINDVAR | COLON u1=UNSIGNED_INTEGER)
-         ( indicator_key (b2=BINDVAR | COLON u2=UNSIGNED_INTEGER))?
-         ->^(HOSTED_VARIABLE_NAME $b1? $u1? indicator_key? $b2? $u2?)
     ;
 
 // $>
