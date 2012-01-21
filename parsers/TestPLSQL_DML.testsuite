@@ -143,6 +143,7 @@ function02.sql OK
 function03.sql OK
 function04.sql OK
 function05.sql OK
+function06.sql OK
 pivot01.sql OK
 pivot02.sql OK
 pivot03.sql OK
@@ -573,9 +574,9 @@ update_statement:
    returning salary into :bnd1>>  OK
 
 merge_statement:
-merge01.sql
-merge02.sql
-merge03.sql
+merge01.sql OK
+merge02.sql OK
+merge03.sql OK
 
 lock_table_statement:
 <<lock table employees 

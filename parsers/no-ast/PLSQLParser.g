@@ -837,6 +837,8 @@ backtrack=true;
     |    alter_key swallow_to_semi  (SEMICOLON|EOF)
     |    grant_key swallow_to_semi  (SEMICOLON|EOF)
     |    truncate_key swallow_to_semi  (SEMICOLON|EOF)
+    |    (begin_key) => body
+    |    (declare_key) => block
     |    assignment_statement
     |    continue_statement
     |    exit_statement
@@ -850,8 +852,6 @@ backtrack=true;
     |    case_statement[true]
     |    sql_statement
     |    function_call
-    |    body
-    |    block
     ;
 
 assignment_statement
@@ -936,7 +936,7 @@ return_statement
     ;
 
 function_call
-    :    routine_name function_argument?
+    :    call_key? routine_name function_argument?
     ;
 
 body
