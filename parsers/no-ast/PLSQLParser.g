@@ -87,6 +87,7 @@ backtrack=true;
     |    drop_sequence
     |    drop_trigger
     |    drop_type
+    |    data_manipulation_language_statements
     ;
 
 // $<DDL -> SQL Statements for Stored PL/SQL Units

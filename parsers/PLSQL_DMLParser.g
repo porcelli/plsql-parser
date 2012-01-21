@@ -330,7 +330,7 @@ query_partition_clause
 
 flashback_query_clause
     :    versions_key between_key (scn_key|timestamp_key) expression -> ^(versions_key scn_key? timestamp_key? ^(EXPR expression)) 
-    |    as_key of_key (scn_key|timestamp_key) expression -> ^(as_key scn_key? timestamp_key? ^(EXPR expression))
+    |    as_key of_key (scn_key|timestamp_key|snapshot_key) expression -> ^(as_key scn_key? timestamp_key? snapshot_key? ^(EXPR expression))
     ;
 
 pivot_clause

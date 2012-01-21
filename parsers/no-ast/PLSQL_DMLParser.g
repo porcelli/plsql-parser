@@ -232,7 +232,7 @@ query_partition_clause
 
 flashback_query_clause
     :    versions_key between_key (scn_key|timestamp_key) expression
-    |    as_key of_key (scn_key|timestamp_key) expression
+    |    as_key of_key (scn_key|timestamp_key|snapshot_key) expression
     ;
 
 pivot_clause

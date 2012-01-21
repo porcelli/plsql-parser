@@ -1016,6 +1016,10 @@ scn_key
     :    {input.LT(1).getText().equalsIgnoreCase("scn")}?=> REGULAR_ID
     ;
 
+snapshot_key
+    :    {input.LT(1).getText().equalsIgnoreCase("snapshot")}?=> REGULAR_ID
+    ;
+
 decrement_key
     :    {input.LT(1).getText().equalsIgnoreCase("decrement")}?=> REGULAR_ID
     ;
