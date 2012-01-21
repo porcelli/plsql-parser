@@ -374,7 +374,7 @@ COMMENT
 // SQL*Plus prompt
 // TODO should be grammar rule, but tricky to implement
 PROMPT
-	: 'prompt' ( ~('\r' | '\n') )* (NEWLINE|EOF)
+	: 'prompt' SPACE ( ~('\r' | '\n') )* (NEWLINE|EOF)
 	;
 //}
 
