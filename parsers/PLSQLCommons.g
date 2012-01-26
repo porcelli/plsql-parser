@@ -281,11 +281,21 @@ char_set_name
 
 // $<Common PL/SQL Specs
 
+// NOTE: In reality this applies to aggregate functions only
+keep_clause
+    :   keep_key^
+        LEFT_PAREN!
+            dense_rank_key (first_key|last_key)
+             order_by_clause
+        RIGHT_PAREN! over_clause?
+    ;
+
 function_argument
     :    LEFT_PAREN 
             argument? (COMMA argument )* 
         RIGHT_PAREN
-        -> ^(ARGUMENTS argument*)
+        keep_clause?
+        -> ^(ARGUMENTS argument* keep_clause?)
     ;
 
 function_argument_analytic
@@ -293,7 +303,8 @@ function_argument_analytic
             (argument respect_or_ignore_nulls?)?
             (COMMA argument respect_or_ignore_nulls? )*
          RIGHT_PAREN
-         -> ^(ARGUMENTS argument*)
+         keep_clause?
+         -> ^(ARGUMENTS argument* keep_clause?)
     ;
 
 function_argument_modeling
@@ -305,7 +316,8 @@ function_argument_modeling
                 | expression alias? (COMMA expression alias?)*
                 )
          RIGHT_PAREN
-         -> ^(ARGUMENTS column_name)
+         keep_clause?
+         -> ^(ARGUMENTS column_name keep_clause?)
     ;
 
 respect_or_ignore_nulls

@@ -966,7 +966,7 @@ interval_expression
     ;
 
 model_expression
-    :    (keep_expression -> keep_expression) 
+    :    (unary_expression -> unary_expression)
         (LEFT_BRACKET model_expression_element RIGHT_BRACKET
             -> ^(MODEL_EXPRESSION[$LEFT_BRACKET] $model_expression model_expression_element))?
     ;
@@ -1006,15 +1006,6 @@ multi_column_for_loop
             )
         RIGHT_PAREN
         -> ^(FOR_MULTI_COLUMN[$for_key.start] column_name+ ^(in_key subquery? expression_list*))
-    ;
-
-keep_expression
-    :    unary_expression
-    (    keep_key^ 
-        LEFT_PAREN! 
-            dense_rank_key (first_key|last_key)
-             order_by_clause
-        RIGHT_PAREN! over_clause?    )?
     ;
 
 unary_expression

@@ -775,7 +775,7 @@ interval_expression
     ;
 
 model_expression
-    :    keep_expression
+    :    unary_expression
         (LEFT_BRACKET model_expression_element RIGHT_BRACKET)?
     ;
 
@@ -809,15 +809,6 @@ multi_column_for_loop
             |    (LEFT_PAREN)=> LEFT_PAREN expression_list (COMMA expression_list)* RIGHT_PAREN
             )
         RIGHT_PAREN
-    ;
-
-keep_expression
-    :    unary_expression
-    (    keep_key 
-        LEFT_PAREN 
-            dense_rank_key (first_key|last_key)
-             order_by_clause
-        RIGHT_PAREN over_clause?    )?
     ;
 
 unary_expression

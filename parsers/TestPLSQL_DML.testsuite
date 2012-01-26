@@ -90,6 +90,7 @@ for_update06.sql OK
 for_update07.sql OK
 for_update08.sql OK
 string01.sql OK
+aggregate01.sql OK
 analytic_query02.sql OK
 analytic_query03.sql OK
 analytic_query04.sql OK
@@ -171,6 +172,7 @@ flashback01.sql OK
 keywordasidentifier01.sql OK
 keywordasidentifier02.sql OK
 keywordasidentifier03.sql OK
+keywordasidentifier04.sql OK
 
 "select * from tablex, tabley" OK
 <<with
