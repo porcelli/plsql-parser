@@ -1297,8 +1297,8 @@ passing_key
     :    {input.LT(1).getText().equalsIgnoreCase("passing")}?=> REGULAR_ID
     ;
 
-columns_key
-    :    PLSQL_RESERVED_COLUMNS
+columns_key //: PLSQL_RESERVED_COLUMNS
+    :    {input.LT(1).getText().equalsIgnoreCase("columns")}?=> REGULAR_ID
     ;
 
 indent_key

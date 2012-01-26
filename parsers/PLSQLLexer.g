@@ -462,10 +462,6 @@ PLSQL_RESERVED_COLAUTH
     :    'colauth'
     ;
 
-PLSQL_RESERVED_COLUMNS
-    :    'columns'
-    ;
-
 PLSQL_RESERVED_COMPRESS
     :    'compress'
     ;
@@ -473,6 +469,10 @@ PLSQL_RESERVED_COMPRESS
 SQL92_RESERVED_CONNECT
     :    'connect'
     ;
+
+//PLSQL_NON_RESERVED_COLUMNS
+//    :    'columns'
+//    ;
 
 PLSQL_NON_RESERVED_CONNECT_BY_ROOT
     :    'connect_by_root'

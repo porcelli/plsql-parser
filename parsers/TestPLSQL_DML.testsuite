@@ -170,6 +170,7 @@ numbers01.sql OK
 flashback01.sql OK
 keywordasidentifier01.sql OK
 keywordasidentifier02.sql OK
+keywordasidentifier03.sql OK
 
 "select * from tablex, tabley" OK
 <<with
