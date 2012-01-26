@@ -98,11 +98,14 @@ import java.util.LinkedList;
                 }
             } else {
                 Token result = tokenBuffer.poll();
-                if (result != Token.SKIP_TOKEN || result != null) { // discard
-                    // SKIP
+                if (result == Token.SKIP_TOKEN || result.getType() == Token.INVALID_TOKEN_TYPE || result == null)
+                {
+                    // discard
+                    // SKIP & INVALID
                     // tokens
-                    return result;
+                    continue;
                 }
+                return result;
             }
         }
     }
@@ -768,7 +771,62 @@ PLSQL_NON_RESERVED_USING
     ;
 
 PLSQL_NON_RESERVED_MODEL
-    :    'model'
+    :    m='model'
+    {
+         // "model" is a keyword if and only if it is followed by ("main"|"partition"|"dimension")
+         // otherwise it is a identifier(REGULAR_ID).
+         // This wodoo implements something like context sensitive lexer.
+         // Here we've matched the word "model". Then the Token is created and en-queued in tokenBuffer
+         // We still remember the reference($m) onto this Token
+         $m.setType(PLSQL_NON_RESERVED_MODEL);
+         emit($m);
+         advanceInput();
+
+         $type = Token.INVALID_TOKEN_TYPE;
+         int markModel = input.mark();
+
+         // Now loop over next Tokens in the input and eventually set Token's type to REGULAR_ID
+
+         // Subclassed version will return NULL unless EOF is reached.
+         // nextToken either returns NULL => then the next token is put into the queue tokenBuffer
+         // or it returns Token.EOF, then nothing is put into the queue
+         Token t1 = super.nextToken();
+         {    // This "if" handles the situation when the "model" is the last text in the input.
+              if( t1 != null && t1.getType() == Token.EOF)
+              {
+                  $m.setType(REGULAR_ID);
+              } else {
+                  t1 = tokenBuffer.pollLast(); // "withdraw" the next token from the queue
+                  while(true)
+                  {
+                     if(t1.getType() == EOF)   // is it EOF?
+                     {
+                         $m.setType(REGULAR_ID);
+                         break;
+                     }
+
+                     if(t1.getChannel() == HIDDEN) // is it a white space? then advance to the next token
+                     {
+                         t1 = super.nextToken(); if( t1 == null) { t1 = tokenBuffer.pollLast(); };
+                         continue;
+                     }
+
+                     if( t1.getType() != REGULAR_ID || // is something other than ("main"|"partition"|"dimension")
+                        ( !t1.getText().equalsIgnoreCase("main") &&
+                          !t1.getText().equalsIgnoreCase("partition") &&
+                          !t1.getText().equalsIgnoreCase("dimension")
+                       ))
+                     {
+                         $m.setType(REGULAR_ID);
+                         break;
+                     }
+
+                     break; // we are in the model_clase do not rewrite anything
+                  } // while true
+              } // else if( t1 != null && t1.getType() == Token.EOF)
+         }
+         input.rewind(markModel);
+    }
     ;
 
 PLSQL_NON_RESERVED_ELSIF

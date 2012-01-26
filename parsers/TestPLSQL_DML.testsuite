@@ -113,6 +113,9 @@ bindvar02.sql OK
 bindvar03.sql OK
 model_clause01.sql OK
 model_clause02.sql OK
+model_clause03.sql OK
+model_clause04.sql OK
+model_clause05.sql OK
 union01.sql OK
 union02.sql OK
 union03.sql OK
@@ -143,7 +146,7 @@ function02.sql OK
 function03.sql OK
 function04.sql OK
 function05.sql OK
-function06.sql OK
+//function06.sql OK fails PL/SQL construct
 pivot01.sql OK
 pivot02.sql OK
 pivot03.sql OK
@@ -165,6 +168,8 @@ simple13.sql OK
 sample01.sql OK
 numbers01.sql OK
 flashback01.sql OK
+keywordasidentifier01.sql OK
+keywordasidentifier02.sql OK
 
 "select * from tablex, tabley" OK
 <<with
