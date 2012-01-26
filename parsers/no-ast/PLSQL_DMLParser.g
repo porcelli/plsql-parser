@@ -107,7 +107,21 @@ seq_of_statements
     |    insert_statement
     |    lock_table_statement
     |    merge_statement
-    |    case_statement[true]
+    |    explain_statement
+//    |    case_statement[true]
+    ;
+
+explain_statement
+    :    explain_key plan_key
+         (set_key statement_id_key EQUALS_OP quoted_string)?
+         (into_key tableview_name)?
+         for_key
+         ( select_statement
+         | update_statement
+         | delete_statement
+         | insert_statement
+         | merge_statement
+         )
     ;
 
 select_statement

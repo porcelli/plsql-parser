@@ -1006,6 +1006,7 @@ data_manipulation_language_statements
     |    update_statement
     |    delete_statement
     |    insert_statement
+    |    explain_statement
     ;
 
 // $>

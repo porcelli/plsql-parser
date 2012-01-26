@@ -615,3 +615,5 @@ lock_table_statement:
    in row share mode 
    wait 10>> OK
 
+explain_statement:
+explain01.sql OK
