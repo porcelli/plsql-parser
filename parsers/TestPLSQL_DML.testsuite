@@ -580,6 +580,7 @@ merge_statement:
 merge01.sql OK
 merge02.sql OK
 merge03.sql OK
+merge04.sql OK
 
 lock_table_statement:
 <<lock table employees 

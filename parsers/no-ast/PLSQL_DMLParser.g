@@ -559,7 +559,7 @@ merge_insert_clause
     ;
 
 selected_tableview
-    :    ( tableview_name | subquery ) table_alias?
+    :    ( tableview_name | LEFT_PAREN select_statement RIGHT_PAREN ) table_alias?
     ;
 
 // $>
