@@ -298,13 +298,13 @@ table_ref
 table_ref_aux
     :
     (    (LEFT_PAREN (select_key|with_key)) => dml_table_expression_clause (pivot_clause|unique_key)?
-    |    (LEFT_PAREN) => LEFT_PAREN table_ref RIGHT_PAREN
+    |    (LEFT_PAREN) => LEFT_PAREN table_ref subquery_operation_part* RIGHT_PAREN
     |    (only_key LEFT_PAREN) => only_key LEFT_PAREN dml_table_expression_clause RIGHT_PAREN
     |    dml_table_expression_clause (pivot_clause|unpivot_clause)?
     )
         flashback_query_clause*
         ({isTableAlias()}? table_alias)?
-        -> ^(TABLE_REF_ELEMENT table_alias? dml_table_expression_clause? table_ref? only_key? pivot_clause? unpivot_clause? flashback_query_clause*)
+        -> ^(TABLE_REF_ELEMENT table_alias? dml_table_expression_clause? table_ref? subquery_operation_part* only_key? pivot_clause? unpivot_clause? flashback_query_clause*)
     ;
 
 join_clause
