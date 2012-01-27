@@ -104,6 +104,11 @@ cast_multiset05.sql OK
 cast_multiset06.sql OK
 cast_multiset07.sql OK
 cast_multiset08.sql OK
+case_when01.sql OK
+case_when02.sql OK
+case_when03.sql OK
+case_when04.sql OK
+case_when05.sql OK
 lexer01.sql OK
 lexer02.sql OK
 lexer03.sql OK

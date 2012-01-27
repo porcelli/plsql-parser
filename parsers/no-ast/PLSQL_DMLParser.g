@@ -238,7 +238,8 @@ outer_join_type
 
 query_partition_clause
     :    partition_key by_key
-    (    (LEFT_PAREN)=> expression_list
+    (    (LEFT_PAREN (select_key|with_key)) => LEFT_PAREN subquery RIGHT_PAREN
+    |    (LEFT_PAREN)=> expression_list
     |    expression (COMMA expression)*
     )
     ;
