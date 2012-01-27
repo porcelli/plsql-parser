@@ -264,12 +264,11 @@ query_block
         where_clause? 
         hierarchical_query_clause? 
         group_by_clause?
-        having_clause? 
         model_clause?
         -> {mode == 1}? ^(select_key from_clause distinct_key? unique_key? all_key? ASTERISK
-                into_clause? where_clause? hierarchical_query_clause? group_by_clause? having_clause? model_clause?)
+                into_clause? where_clause? hierarchical_query_clause? group_by_clause? model_clause?)
         -> ^(select_key from_clause distinct_key? unique_key? all_key? ^(SELECT_LIST selected_element+)
-                into_clause? where_clause? hierarchical_query_clause? group_by_clause? having_clause? model_clause?)  
+                into_clause? where_clause? hierarchical_query_clause? group_by_clause? model_clause?)
     ;
 
 selected_element
@@ -441,8 +440,10 @@ start_part
     ;
 
 group_by_clause
-    :    group_key by_key group_by_elements ((COMMA group_by_elements)=> COMMA group_by_elements)*
-        -> ^(group_key ^(GROUP_BY_ELEMENT group_by_elements)+)
+    :    (group_key) => group_key by_key group_by_elements ((COMMA group_by_elements)=> COMMA group_by_elements)* having_clause?
+         -> ^(group_key ^(GROUP_BY_ELEMENT group_by_elements)+ having_clause?)
+    |    (having_key) => having_clause (group_key by_key group_by_elements ((COMMA group_by_elements)=> COMMA group_by_elements)*)?
+         -> ^(group_key having_clause ^(GROUP_BY_ELEMENT group_by_elements)+)
     ;
 
 group_by_elements
