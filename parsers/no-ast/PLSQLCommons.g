@@ -24,13 +24,17 @@ partition_extension_clause
         for_key? expression_list
     ;
 
-alias
+column_alias
 options
 {
 backtrack=true;
 }
-    :    as_key? (id|alias_quoted_string)
+    :    as_key? ( id | alias_quoted_string )
     |    as_key
+    ;
+
+table_alias
+    :    ( id | alias_quoted_string )
     ;
 
 alias_quoted_string
@@ -225,7 +229,7 @@ function_argument_modeling
             using_key
                 ( (tableview_name PERIOD ASTERISK)=> tableview_name PERIOD ASTERISK
                 | ASTERISK
-                | expression alias? (COMMA expression alias?)*
+                | expression column_alias? (COMMA expression column_alias?)*
                 )
          RIGHT_PAREN
          keep_clause?

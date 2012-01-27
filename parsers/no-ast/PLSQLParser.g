@@ -378,7 +378,7 @@ referencing_clause
     ;
 
 referencing_element
-    :    ( new_key | old_key | parent_key ) alias
+    :    ( new_key | old_key | parent_key ) column_alias
     ;
 
 // $>

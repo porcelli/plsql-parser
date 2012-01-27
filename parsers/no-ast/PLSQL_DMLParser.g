@@ -25,9 +25,9 @@ parser grammar PLSQL_DMLParser;
             lt2 = input.LT(2).getText().toLowerCase();
         }
 
-        if (lt1.equals("as")){
-            return true;
-        }
+//        if (lt1.equals("as")){
+//            return true;
+//        }
 
         if ((lt1.equals("partition") && lt2.equals("by")) || lt1.equals("cross")
                 || lt1.equals("natural") || lt1.equals("inner")
@@ -179,7 +179,7 @@ query_block
     ;
 
 selected_element
-    :    select_list_elements alias?
+    :    select_list_elements column_alias?
     ;
 
 from_clause
@@ -207,7 +207,7 @@ table_ref_aux
     |    dml_table_expression_clause (pivot_clause|unpivot_clause)?
     )
         flashback_query_clause*
-        ({isTableAlias()}? alias)?
+        ({isTableAlias()}? table_alias)?
     ;
 
 join_clause
@@ -259,7 +259,7 @@ pivot_clause
     ;
 
 pivot_element
-    :    aggregate_function_name LEFT_PAREN expression RIGHT_PAREN alias?
+    :    aggregate_function_name LEFT_PAREN expression RIGHT_PAREN column_alias?
     ;
 
 pivot_for_clause
@@ -280,7 +280,7 @@ pivot_in_clause
     ;
 
 pivot_in_clause_element
-    :    pivot_in_clause_elements alias?
+    :    pivot_in_clause_elements column_alias?
     ;
 
 pivot_in_clause_elements
@@ -392,7 +392,7 @@ model_column_list
     ;
 
 model_column
-    :    expression alias?
+    :    expression table_alias?
     ;
 
 model_rules_clause
@@ -526,7 +526,7 @@ values_clause
 
 // $>
 merge_statement
-    :    merge_key into_key tableview_name alias?
+    :    merge_key into_key tableview_name table_alias?
         using_key selected_tableview on_key LEFT_PAREN condition RIGHT_PAREN
         (
             (when_key matched_key) => merge_update_clause merge_insert_clause?
@@ -559,7 +559,7 @@ merge_insert_clause
     ;
 
 selected_tableview
-    :    ( tableview_name | subquery ) alias?
+    :    ( tableview_name | subquery ) table_alias?
     ;
 
 // $>
@@ -595,7 +595,7 @@ lock_mode
 general_table_ref
     :    (    dml_table_expression_clause
         |    only_key LEFT_PAREN dml_table_expression_clause RIGHT_PAREN
-        )    alias?
+        )    table_alias?
     ;
 
 static_returning_clause
@@ -959,7 +959,7 @@ standard_function
                 (entityescaping_key|noentityescaping_key)?
                 (name_key|evalname_key)? expression_wrapper
                 ({input.LT(2).getText().equalsIgnoreCase("xmlattributes")}? COMMA xml_attributes_clause)?
-                (COMMA expression_wrapper alias?)*
+                (COMMA expression_wrapper column_alias?)*
             RIGHT_PAREN
     |    xmlexists_key
             LEFT_PAREN
@@ -1055,7 +1055,7 @@ using_clause
     ;
 
 using_element
-    :    (in_key out_key?|out_key)? select_list_elements alias?
+    :    (in_key out_key?|out_key)? select_list_elements column_alias?
     ;
 
 collect_order_by_part
@@ -1077,7 +1077,7 @@ cost_matrix_clause
 
 xml_passing_clause
     :    passing_key (by_key value_key)?
-            expression_wrapper alias? (COMMA expression_wrapper alias?)
+            expression_wrapper column_alias? (COMMA expression_wrapper column_alias?)
     ;
 
 xml_attributes_clause
@@ -1092,8 +1092,8 @@ xml_attributes_clause
 xml_namespaces_clause
     :    xmlnamespaces_key
         LEFT_PAREN
-            (concatenation_wrapper alias)? 
-                (COMMA concatenation_wrapper alias)*
+            (concatenation_wrapper column_alias)?
+                (COMMA concatenation_wrapper column_alias)*
             ((default_key)=> xml_general_default_part)?
         RIGHT_PAREN
     ;

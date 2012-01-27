@@ -387,10 +387,6 @@ table_ref_aux:
   versions between timestamp 
     systimestamp and systimestamp2>> OK
 "employees e"  OK
-"employees as e"  OK
-<<employees 
-  versions between timestamp 
-    systimestamp and systimestamp2 as e>> OK
 <<employees 
   versions between timestamp 
     systimestamp and systimestamp2 e>> OK
@@ -424,7 +420,6 @@ select*from table_4>>
 "select a,b into :VarA,:FrmA_FieldB,:cc_ from table_1" OK
 
 "select A from (select B from (select C from d) cross join table_b b)" OK
-"select 0 from (select B from (select * from C) cross join table_b as b)" OK
 
 "select * from a where a<> :Var1" OK
 "select * from a where a<> : 11" OK
