@@ -103,6 +103,12 @@ cast_multiset04.sql OK
 cast_multiset05.sql OK
 cast_multiset06.sql OK
 cast_multiset07.sql OK
+cast_multiset08.sql OK
+case_when01.sql OK
+case_when02.sql OK
+case_when03.sql OK
+case_when04.sql OK
+case_when05.sql OK
 lexer01.sql OK
 lexer02.sql OK
 lexer03.sql OK
@@ -136,6 +142,8 @@ groupby02.sql OK
 groupby03.sql OK
 groupby04.sql OK
 groupby05.sql OK
+groupby06.sql OK
+groupby07.sql OK
 order_by01.sql OK
 order_by02.sql OK
 order_by03.sql OK

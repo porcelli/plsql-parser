@@ -174,7 +174,6 @@ query_block
         where_clause? 
         hierarchical_query_clause? 
         group_by_clause?
-        having_clause? 
         model_clause?
     ;
 
@@ -243,7 +242,8 @@ outer_join_type
 
 query_partition_clause
     :    partition_key by_key
-    (    (LEFT_PAREN)=> expression_list
+    (    (LEFT_PAREN (select_key|with_key)) => LEFT_PAREN subquery RIGHT_PAREN
+    |    (LEFT_PAREN)=> expression_list
     |    expression (COMMA expression)*
     )
     ;
@@ -332,7 +332,12 @@ start_part
     ;
 
 group_by_clause
-    :    group_key by_key group_by_elements ((COMMA group_by_elements)=> COMMA group_by_elements)*
+    :   (group_key) => group_key by_key group_by_elements
+            ((COMMA group_by_elements)=> COMMA group_by_elements)*
+            having_clause?
+    |   (having_key) => having_clause
+            (group_key by_key group_by_elements
+            ((COMMA group_by_elements)=> COMMA group_by_elements)*)?
     ;
 
 group_by_elements
