@@ -290,15 +290,19 @@ table_ref_list
     :    table_ref (COMMA! table_ref)*
     ;
 
+// NOTE to PIVOT clause
+// according the SQL reference this should not be possible
+// according to he reality it is. Here we probably apply pivot/unpivot onto whole join clause
+// eventhough it is not enclosed in parenthesis. See pivot examples 09,10,11
 table_ref
-    :    table_ref_aux join_clause*
-        -> ^(TABLE_REF table_ref_aux join_clause*)
+    :    table_ref_aux join_clause* (pivot_clause|unpivot_clause)?
+        -> ^(TABLE_REF table_ref_aux join_clause* pivot_clause? unpivot_clause?)
     ;
 
 table_ref_aux
     :
-    (    (LEFT_PAREN (select_key|with_key)) => dml_table_expression_clause (pivot_clause|unique_key)?
-    |    (LEFT_PAREN) => LEFT_PAREN table_ref subquery_operation_part* RIGHT_PAREN
+    (    (LEFT_PAREN (select_key|with_key)) => dml_table_expression_clause (pivot_clause|unpivot_clause)?
+    |    (LEFT_PAREN) => LEFT_PAREN table_ref subquery_operation_part* RIGHT_PAREN (pivot_clause|unpivot_clause)?
     |    (only_key LEFT_PAREN) => only_key LEFT_PAREN dml_table_expression_clause RIGHT_PAREN
     |    dml_table_expression_clause (pivot_clause|unpivot_clause)?
     )
@@ -418,14 +422,14 @@ unpivot_in_clause
     ;
 
 unpivot_in_elements
-    :    (    column_name
+    :   (    column_name
         |    LEFT_PAREN column_name (COMMA column_name)* RIGHT_PAREN
         )
-        as_key?
-        (    expression_wrapper
-        |    (LEFT_PAREN)=> expression_list
+        (    as_key?
+        (    constant
+        |    (LEFT_PAREN)=> LEFT_PAREN constant (COMMA constant)* RIGHT_PAREN
         )
-        -> column_name+ ^(PIVOT_ALIAS expression_wrapper? expression_list?)
+        -> column_name+ ^(PIVOT_ALIAS constant+)
     ;
 
 hierarchical_query_clause
