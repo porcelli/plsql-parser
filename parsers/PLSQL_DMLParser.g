@@ -1086,7 +1086,11 @@ backtrack=true;
     |    bind_variable
     |    constant
     |    general_element
-    |    LEFT_PAREN! ((select_key)=> subquery|expression_or_vector) RIGHT_PAREN!
+    |    LEFT_PAREN!
+         (
+              ( select_key | with_key)=> subquery RIGHT_PAREN! subquery_operation_part*
+              | expression_or_vector RIGHT_PAREN!
+         )
     ;
 
 expression_or_vector
