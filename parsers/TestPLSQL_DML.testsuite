@@ -118,6 +118,8 @@ columns01.sql OK
 //bindvar01.sql OK insert
 bindvar02.sql OK
 bindvar03.sql OK
+bindvar04.sql OK
+bindvar05.sql OK
 model_clause01.sql OK
 model_clause02.sql OK
 model_clause03.sql OK

@@ -931,6 +931,10 @@ in_elements
          -> ^(EXPR_LIST concatenation_wrapper+)
     |    constant
          -> ^(EXPR_LIST constant)
+    |    bind_variable
+         -> ^(EXPR_LIST bind_variable)
+    |    general_element
+         -> ^(EXPR_LIST general_element)
     ;
 
 between_elements

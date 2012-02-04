@@ -750,6 +750,8 @@ in_elements
     :    (LEFT_PAREN+ (select_key|with_key)) => LEFT_PAREN subquery RIGHT_PAREN
     |    LEFT_PAREN concatenation_wrapper (COMMA concatenation_wrapper)* RIGHT_PAREN
     |    constant
+    |    bind_variable
+    |    general_element
     ;
 
 between_elements
