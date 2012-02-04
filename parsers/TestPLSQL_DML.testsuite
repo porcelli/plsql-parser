@@ -149,6 +149,7 @@ order_by02.sql OK
 order_by03.sql OK
 order_by04.sql OK
 order_by05.sql OK
+order_by06.sql OK
 dblink01.sql OK
 function01.sql OK
 function02.sql OK
