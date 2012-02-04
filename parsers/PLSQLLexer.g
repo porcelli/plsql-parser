@@ -531,7 +531,56 @@ SQL92_RESERVED_END
     ;
 
 SQL92_RESERVED_EXCEPTION
-    :    'exception'
+    :    e='exception'
+    // "exception" is a keyword only withing the contex of the PL/SQL language
+    // while it can be an identifier(column name, table name) in SQL
+    // "exception" is a keyword if and only it is followed by "when"
+    {
+    $e.setType(SQL92_RESERVED_EXCEPTION);
+    emit($e);
+    advanceInput();
+
+    $type = Token.INVALID_TOKEN_TYPE;
+    int markModel = input.mark();
+
+    // Now loop over next Tokens in the input and eventually set Token's type to REGULAR_ID
+
+    // Subclassed version will return NULL unless EOF is reached.
+    // nextToken either returns NULL => then the next token is put into the queue tokenBuffer
+    // or it returns Token.EOF, then nothing is put into the queue
+    Token t1 = super.nextToken();
+    {    // This "if" handles the situation when the "model" is the last text in the input.
+        if( t1 != null && t1.getType() == Token.EOF)
+        {
+             $e.setType(REGULAR_ID);
+        } else {
+             t1 = tokenBuffer.pollLast(); // "withdraw" the next token from the queue
+             while(true)
+             {
+                 if(t1.getType() == EOF)   // is it EOF?
+                 {
+                     $e.setType(REGULAR_ID);
+                     break;
+                 }
+
+                 if(t1.getChannel() == HIDDEN) // is it a white space? then advance to the next token
+                 {
+                     t1 = super.nextToken(); if( t1 == null) { t1 = tokenBuffer.pollLast(); };
+                     continue;
+                 }
+
+                 if( t1.getType() != SQL92_RESERVED_WHEN && t1.getType() != SEMICOLON) // is something other than "when"
+                 {
+                     $e.setType(REGULAR_ID);
+                     break;
+                 }
+
+                 break; // we are in the model_clase do not rewrite anything
+              } // while true
+         } // else if( t1 != null && t1.getType() == Token.EOF)
+    }
+    input.rewind(markModel);
+    }
     ;
 
 PLSQL_RESERVED_EXCLUSIVE

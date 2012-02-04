@@ -181,6 +181,7 @@ keywordasidentifier01.sql OK
 keywordasidentifier02.sql OK
 keywordasidentifier03.sql OK
 keywordasidentifier04.sql OK
+keywordasidentifier05.sql OK
 
 "select * from tablex, tabley" OK
 <<with
