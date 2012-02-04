@@ -1,4 +1,4 @@
-SELECT *
-FROM   (SELECT product_code, quantity
-        FROM   pivot_test)
-PIVOT  (SUM(quantity) AS sum_quantity FOR (product_code) IN ('A' AS a, 'B' AS b, 'C' AS c));
+select *
+from   (select product_code, quantity
+        from   pivot_test)
+pivot  (sum(quantity) as sum_quantity for (product_code) in ('a' as a, 'b' as b, 'c' as c))

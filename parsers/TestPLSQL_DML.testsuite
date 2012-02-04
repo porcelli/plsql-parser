@@ -162,7 +162,15 @@ function05.sql OK
 pivot01.sql OK
 pivot02.sql OK
 pivot03.sql OK
-//pivot04.sql OK fails ATM
+pivot04.sql OK
+pivot05.sql OK
+pivot06.sql OK
+pivot07.sql OK
+pivot08.sql OK
+pivot09.sql OK
+pivot10.sql OK
+pivot11.sql OK
+pivot12.sql OK
 comment01.sql OK
 simple02.sql OK
 simple03.sql OK

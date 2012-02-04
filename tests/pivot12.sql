@@ -9,7 +9,7 @@
             'u' v5
         from dual
     )
-    unpivot INCLUDE NULLS
+    unpivot include nulls
     (
         value
         for value_type in

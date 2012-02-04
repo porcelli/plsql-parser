@@ -1,12 +1,12 @@
- SELECT *
- FROM s JOIN d USING(c)
- PIVOT
+ select *
+ from s join d using(c)
+ pivot
  (
- MAX(c_c_p) as max_ccp
- , MAX(d_c_p) max_dcp
- , MAX(d_x_p) dxp
- , COUNT(1) cnt
- FOR (i, p) IN
+ max(c_c_p) as max_ccp
+ , max(d_c_p) max_dcp
+ , max(d_x_p) dxp
+ , count(1) cnt
+ for (i, p) in
  (
  (1,1) as one_one,
  (1,2) as one_two,
@@ -15,5 +15,5 @@
  (2,2) as two_two,
  (2,3) as two_three
  )
- )						 
- WHERE d_t = 'P'
+ )
+ where d_t = 'p'

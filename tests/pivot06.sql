@@ -1,6 +1,6 @@
-SELECT *
-FROM   (SELECT product_code, quantity
-        FROM   pivot_test)
-PIVOT XML (SUM(quantity) AS sum_quantity FOR (product_code) IN (SELECT DISTINCT product_code 
-                                                                FROM   pivot_test
-                                                                WHERE  id < 10));
+select *
+from   (select product_code, quantity
+        from   pivot_test)
+pivot xml (sum(quantity) as sum_quantity for (product_code) in (select distinct product_code
+                                                                from   pivot_test
+                                                                where  id < 10))
