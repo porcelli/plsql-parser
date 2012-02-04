@@ -164,8 +164,8 @@ pivot03.sql OK
 comment01.sql OK
 simple02.sql OK
 simple03.sql OK
-//simple04.sql OK fails ATM
-//simple05.sql OK fails ATM
+simple04.sql OK
+simple05.sql OK
 simple06.sql OK
 simple07.sql OK
 simple08.sql OK
@@ -174,7 +174,7 @@ simple10.sql OK
 simple11.sql OK
 simple12.sql OK
 simple13.sql OK
-//object_access01.sql OK fails ATM
+object_access01.sql OK
 sample01.sql OK
 numbers01.sql OK
 flashback01.sql OK
@@ -183,6 +183,8 @@ keywordasidentifier02.sql OK
 keywordasidentifier03.sql OK
 keywordasidentifier04.sql OK
 keywordasidentifier05.sql OK
+//xmltable01.sql OK
+xmltable02.sql OK
 
 "select * from tablex, tabley" OK
 <<with
