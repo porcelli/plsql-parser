@@ -98,11 +98,14 @@ import java.util.LinkedList;
                 }
             } else {
                 Token result = tokenBuffer.poll();
-                if (result != Token.SKIP_TOKEN || result != null) { // discard
-                    // SKIP
+                if (result == Token.SKIP_TOKEN || result.getType() == Token.INVALID_TOKEN_TYPE || result == null)
+                {
+                    // discard
+                    // SKIP & INVALID
                     // tokens
-                    return result;
+                    continue;
                 }
+                return result;
             }
         }
     }
@@ -154,11 +157,14 @@ PERIOD
 //  Rule #501 <signed_integer> was incorporated directly in the token <APPROXIMATE_NUM_LIT>
 //  See also the rule #617 <unsigned_num_lit>
 EXACT_NUM_LIT
-    :    UNSIGNED_INTEGER
+    : (
+            UNSIGNED_INTEGER
             ( '.' UNSIGNED_INTEGER
             |    {$type = UNSIGNED_INTEGER;}
             ) ( ('E' | 'e') ('+' | '-')? UNSIGNED_INTEGER {$type = APPROXIMATE_NUM_LIT;} )?
     |    '.' UNSIGNED_INTEGER ( ('E' | 'e') ('+' | '-')? UNSIGNED_INTEGER {$type = APPROXIMATE_NUM_LIT;} )?
+    )
+    ( 'D' | 'd' | 'f' | 'F')?
     ;
 //}
 
@@ -250,6 +256,14 @@ ASSIGN_OP
     :    ':='
     ;
 
+// See OCI reference for more information about this
+BINDVAR
+    :    COLON SIMPLE_LETTER  ( SIMPLE_LETTER | '0' .. '9' | '_' )*
+    |    COLON DELIMITED_ID  // not used in SQL but spotted in v$sqltext when using cursor_sharing
+    |    COLON UNSIGNED_INTEGER
+    |    QUESTION_MARK // not in SQL, not in Oracle, not in OCI, use this for JDBC
+    ;
+
 COLON
     :    ':'
     ;
@@ -292,6 +306,7 @@ GREATER_THAN_OP
     :    '>'
     ;
 
+fragment
 QUESTION_MARK
     :    '?'
     ;
@@ -358,6 +373,15 @@ COMMENT
     |    '/*' (options{greedy=false;} : .)* '*/'
     ;
 //}
+
+// SQL*Plus prompt
+// TODO should be grammar rule, but tricky to implement
+PROMPT
+	: 'prompt' SPACE ( ~('\r' | '\n') )* (NEWLINE|EOF)
+	;
+//}
+
+
 
 //{ Rule #360 <NEWLINE>
 fragment
@@ -438,10 +462,6 @@ PLSQL_RESERVED_COLAUTH
     :    'colauth'
     ;
 
-PLSQL_RESERVED_COLUMNS
-    :    'columns'
-    ;
-
 PLSQL_RESERVED_COMPRESS
     :    'compress'
     ;
@@ -449,6 +469,10 @@ PLSQL_RESERVED_COMPRESS
 SQL92_RESERVED_CONNECT
     :    'connect'
     ;
+
+//PLSQL_NON_RESERVED_COLUMNS
+//    :    'columns'
+//    ;
 
 PLSQL_NON_RESERVED_CONNECT_BY_ROOT
     :    'connect_by_root'
@@ -507,7 +531,56 @@ SQL92_RESERVED_END
     ;
 
 SQL92_RESERVED_EXCEPTION
-    :    'exception'
+    :    e='exception'
+    // "exception" is a keyword only withing the contex of the PL/SQL language
+    // while it can be an identifier(column name, table name) in SQL
+    // "exception" is a keyword if and only it is followed by "when"
+    {
+    $e.setType(SQL92_RESERVED_EXCEPTION);
+    emit($e);
+    advanceInput();
+
+    $type = Token.INVALID_TOKEN_TYPE;
+    int markModel = input.mark();
+
+    // Now loop over next Tokens in the input and eventually set Token's type to REGULAR_ID
+
+    // Subclassed version will return NULL unless EOF is reached.
+    // nextToken either returns NULL => then the next token is put into the queue tokenBuffer
+    // or it returns Token.EOF, then nothing is put into the queue
+    Token t1 = super.nextToken();
+    {    // This "if" handles the situation when the "model" is the last text in the input.
+        if( t1 != null && t1.getType() == Token.EOF)
+        {
+             $e.setType(REGULAR_ID);
+        } else {
+             t1 = tokenBuffer.pollLast(); // "withdraw" the next token from the queue
+             while(true)
+             {
+                 if(t1.getType() == EOF)   // is it EOF?
+                 {
+                     $e.setType(REGULAR_ID);
+                     break;
+                 }
+
+                 if(t1.getChannel() == HIDDEN) // is it a white space? then advance to the next token
+                 {
+                     t1 = super.nextToken(); if( t1 == null) { t1 = tokenBuffer.pollLast(); };
+                     continue;
+                 }
+
+                 if( t1.getType() != SQL92_RESERVED_WHEN && t1.getType() != SEMICOLON) // is something other than "when"
+                 {
+                     $e.setType(REGULAR_ID);
+                     break;
+                 }
+
+                 break; // we are in the model_clase do not rewrite anything
+              } // while true
+         } // else if( t1 != null && t1.getType() == Token.EOF)
+    }
+    input.rewind(markModel);
+    }
     ;
 
 PLSQL_RESERVED_EXCLUSIVE
@@ -674,9 +747,9 @@ SQL92_RESERVED_SIZE
     :    'size'
     ;
 
-SQL92_RESERVED_SQL
-    :    'sql'
-    ;
+// SQL92_RESERVED_SQL
+//     :    'sql'
+//     ;
 
 PLSQL_RESERVED_START
     :    'start'
@@ -688,6 +761,10 @@ PLSQL_RESERVED_TABAUTH
 
 SQL92_RESERVED_TABLE
     :    'table'
+    ;
+
+SQL92_RESERVED_THE
+    :    'the'
     ;
 
 SQL92_RESERVED_THEN
@@ -743,7 +820,62 @@ PLSQL_NON_RESERVED_USING
     ;
 
 PLSQL_NON_RESERVED_MODEL
-    :    'model'
+    :    m='model'
+    {
+         // "model" is a keyword if and only if it is followed by ("main"|"partition"|"dimension")
+         // otherwise it is a identifier(REGULAR_ID).
+         // This wodoo implements something like context sensitive lexer.
+         // Here we've matched the word "model". Then the Token is created and en-queued in tokenBuffer
+         // We still remember the reference($m) onto this Token
+         $m.setType(PLSQL_NON_RESERVED_MODEL);
+         emit($m);
+         advanceInput();
+
+         $type = Token.INVALID_TOKEN_TYPE;
+         int markModel = input.mark();
+
+         // Now loop over next Tokens in the input and eventually set Token's type to REGULAR_ID
+
+         // Subclassed version will return NULL unless EOF is reached.
+         // nextToken either returns NULL => then the next token is put into the queue tokenBuffer
+         // or it returns Token.EOF, then nothing is put into the queue
+         Token t1 = super.nextToken();
+         {    // This "if" handles the situation when the "model" is the last text in the input.
+              if( t1 != null && t1.getType() == Token.EOF)
+              {
+                  $m.setType(REGULAR_ID);
+              } else {
+                  t1 = tokenBuffer.pollLast(); // "withdraw" the next token from the queue
+                  while(true)
+                  {
+                     if(t1.getType() == EOF)   // is it EOF?
+                     {
+                         $m.setType(REGULAR_ID);
+                         break;
+                     }
+
+                     if(t1.getChannel() == HIDDEN) // is it a white space? then advance to the next token
+                     {
+                         t1 = super.nextToken(); if( t1 == null) { t1 = tokenBuffer.pollLast(); };
+                         continue;
+                     }
+
+                     if( t1.getType() != REGULAR_ID || // is something other than ("main"|"partition"|"dimension")
+                        ( !t1.getText().equalsIgnoreCase("main") &&
+                          !t1.getText().equalsIgnoreCase("partition") &&
+                          !t1.getText().equalsIgnoreCase("dimension")
+                       ))
+                     {
+                         $m.setType(REGULAR_ID);
+                         break;
+                     }
+
+                     break; // we are in the model_clase do not rewrite anything
+                  } // while true
+              } // else if( t1 != null && t1.getType() == Token.EOF)
+         }
+         input.rewind(markModel);
+    }
     ;
 
 PLSQL_NON_RESERVED_ELSIF
@@ -759,7 +891,11 @@ PLSQL_NON_RESERVED_UNPIVOT
     ;
 
 REGULAR_ID
-    :    (SIMPLE_LETTER) (SIMPLE_LETTER | '_' | '0'..'9')*
+    :    (SIMPLE_LETTER) (SIMPLE_LETTER | '$' | '_' | '#' | '0'..'9')*
+    ;
+
+ZV
+    :    '@!' {$channel=HIDDEN;}
     ;
 
 // disambiguate these

@@ -24,13 +24,17 @@ partition_extension_clause
         for_key? expression_list
     ;
 
-alias
+column_alias
 options
 {
 backtrack=true;
 }
-    :    as_key? (id|alias_quoted_string)
+    :    as_key? ( id | alias_quoted_string )
     |    as_key
+    ;
+
+table_alias
+    :    ( id | alias_quoted_string )
     ;
 
 alias_quoted_string
@@ -149,9 +153,9 @@ trigger_name
     ;
 
 variable_name
-    :    COLON? (INTRODUCER char_set_name)?
-            id_expression (((PERIOD|COLON) id_expression)=> (PERIOD|COLON) id_expression)?
-    |    COLON UNSIGNED_INTEGER
+    :    (INTRODUCER char_set_name)?
+            id_expression ((PERIOD id_expression)=> PERIOD id_expression)?
+    |    bind_variable
     ;
 
 index_name
@@ -160,10 +164,12 @@ index_name
 
 cursor_name
     :    id
+    |    bind_variable
     ;
 
 record_name
     :    id
+    |    bind_variable
     ;
 
 collection_name
@@ -193,10 +199,20 @@ char_set_name
 
 // $<Common PL/SQL Specs
 
+// NOTE: In reality this applies to aggregate functions only
+keep_clause
+    :   keep_key
+        LEFT_PAREN
+            dense_rank_key (first_key|last_key)
+             order_by_clause
+        RIGHT_PAREN over_clause?
+    ;
+
 function_argument
     :    LEFT_PAREN 
             argument? (COMMA argument )* 
         RIGHT_PAREN
+        keep_clause?
     ;
 
 function_argument_analytic
@@ -204,6 +220,19 @@ function_argument_analytic
             (argument respect_or_ignore_nulls?)?
             (COMMA argument respect_or_ignore_nulls? )*
          RIGHT_PAREN
+         keep_clause?
+    ;
+
+function_argument_modeling
+    :    LEFT_PAREN
+            column_name (COMMA (numeric|null_key) (COMMA (numeric|null_key) )? )?
+            using_key
+                ( (tableview_name PERIOD ASTERISK)=> tableview_name PERIOD ASTERISK
+                | ASTERISK
+                | expression column_alias? (COMMA expression column_alias?)*
+                )
+         RIGHT_PAREN
+         keep_clause?
     ;
 
 respect_or_ignore_nulls
@@ -290,14 +319,19 @@ native_datatype_element
     |    mlslabel_key
     ;
 
+bind_variable
+    :    ( BINDVAR | COLON UNSIGNED_INTEGER)
+         ( indicator_key? (BINDVAR | COLON UNSIGNED_INTEGER))?
+         ((PERIOD general_element_part)=> PERIOD general_element_part)*
+    ;
+
 general_element
-    :    general_element_part (((PERIOD|COLON) general_element_part)=> (PERIOD|COLON) general_element_part)*
+    :    general_element_part ((PERIOD general_element_part)=> PERIOD general_element_part)*
     ;
 
 general_element_part
-    :    (INTRODUCER char_set_name)? COLON? id_expression 
-            (((PERIOD|COLON) id_expression)=> (PERIOD|COLON) id_expression)* function_argument?
-    |    COLON UNSIGNED_INTEGER
+    :    (INTRODUCER char_set_name)? id_expression
+            ((PERIOD id_expression)=> PERIOD id_expression)* function_argument?
     ;
 
 table_element
@@ -309,12 +343,12 @@ table_element
 // $<Lexer Mappings
 
 constant
-    :    timestamp_key quoted_string (at_key time_key zone_key quoted_string)?
-    |    interval_key (quoted_string | general_element_part)
+    :    timestamp_key (quoted_string | bind_variable) (at_key time_key zone_key quoted_string)?
+    |    interval_key (quoted_string | bind_variable | general_element_part)
          ( day_key | hour_key | minute_key | second_key)
-         ( LEFT_PAREN UNSIGNED_INTEGER (COMMA UNSIGNED_INTEGER)? RIGHT_PAREN)?
+         ( LEFT_PAREN (UNSIGNED_INTEGER | bind_variable) (COMMA (UNSIGNED_INTEGER | bind_variable) )? RIGHT_PAREN)?
          ( to_key
-             ( day_key | hour_key | minute_key | second_key (LEFT_PAREN UNSIGNED_INTEGER RIGHT_PAREN)? )
+             ( day_key | hour_key | minute_key | second_key (LEFT_PAREN (UNSIGNED_INTEGER | bind_variable) RIGHT_PAREN)? )
          )?
     |    numeric
     |    date_key quoted_string

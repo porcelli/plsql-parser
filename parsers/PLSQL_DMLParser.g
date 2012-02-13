@@ -23,6 +23,7 @@ options {
 }
 
 tokens {
+    EXPLAIN_STATEMENT;
     SELECT_STATEMENT;
     FACTORING;
     SUBQUERY;
@@ -109,9 +110,9 @@ tokens {
             lt2 = input.LT(2).getText().toLowerCase();
         }
 
-        if (lt1.equals("as")){
-            return true;
-        }
+//        if (lt1.equals("as")){
+//            return true;
+//        }
 
         if ((lt1.equals("partition") && lt2.equals("by")) || lt1.equals("cross")
                 || lt1.equals("natural") || lt1.equals("inner")
@@ -191,7 +192,22 @@ seq_of_statements
     |    insert_statement
     |    lock_table_statement
     |    merge_statement
-    |    case_statement[true]
+    |    explain_statement
+//    |    case_statement[true]
+    ;
+
+explain_statement
+    :    explain_key plan_key
+         (set_key statement_id_key EQUALS_OP quoted_string)?
+         (into_key tableview_name)?
+         for_key
+         ( select_statement
+         | update_statement
+         | delete_statement
+         | insert_statement
+         | merge_statement
+         )
+         -> ^(EXPLAIN_STATEMENT select_statement? update_statement? delete_statement? insert_statement? merge_statement?)
     ;
 
 select_statement
@@ -207,7 +223,7 @@ subquery_factoring_clause
     ;
 
 factoring_element
-    :    query_name (LEFT_PAREN column_name (COMMA column_name)* RIGHT_PAREN)? as_key LEFT_PAREN subquery RIGHT_PAREN
+    :    query_name (LEFT_PAREN column_name (COMMA column_name)* RIGHT_PAREN)? as_key LEFT_PAREN subquery order_by_clause? RIGHT_PAREN
          search_clause?
          cycle_clause?
         -> ^(FACTORING query_name subquery search_clause? cycle_clause?)
@@ -248,17 +264,16 @@ query_block
         where_clause? 
         hierarchical_query_clause? 
         group_by_clause?
-        having_clause? 
         model_clause?
         -> {mode == 1}? ^(select_key from_clause distinct_key? unique_key? all_key? ASTERISK
-                into_clause? where_clause? hierarchical_query_clause? group_by_clause? having_clause? model_clause?)
+                into_clause? where_clause? hierarchical_query_clause? group_by_clause? model_clause?)
         -> ^(select_key from_clause distinct_key? unique_key? all_key? ^(SELECT_LIST selected_element+)
-                into_clause? where_clause? hierarchical_query_clause? group_by_clause? having_clause? model_clause?)  
+                into_clause? where_clause? hierarchical_query_clause? group_by_clause? model_clause?)
     ;
 
 selected_element
-    :    select_list_elements alias?
-        -> ^(SELECT_ITEM select_list_elements alias?)
+    :    select_list_elements column_alias?
+        -> ^(SELECT_ITEM select_list_elements column_alias?)
     ;
 
 from_clause
@@ -274,21 +289,25 @@ table_ref_list
     :    table_ref (COMMA! table_ref)*
     ;
 
+// NOTE to PIVOT clause
+// according the SQL reference this should not be possible
+// according to he reality it is. Here we probably apply pivot/unpivot onto whole join clause
+// eventhough it is not enclosed in parenthesis. See pivot examples 09,10,11
 table_ref
-    :    table_ref_aux join_clause*
-        -> ^(TABLE_REF table_ref_aux join_clause*)
+    :    table_ref_aux join_clause* (pivot_clause|unpivot_clause)?
+        -> ^(TABLE_REF table_ref_aux join_clause* pivot_clause? unpivot_clause?)
     ;
 
 table_ref_aux
     :
-    (    (LEFT_PAREN (select_key|with_key)) => dml_table_expression_clause (pivot_clause|unique_key)?
-    |    (LEFT_PAREN) => LEFT_PAREN table_ref RIGHT_PAREN
+    (    (LEFT_PAREN (select_key|with_key)) => dml_table_expression_clause (pivot_clause|unpivot_clause)?
+    |    (LEFT_PAREN) => LEFT_PAREN table_ref subquery_operation_part* RIGHT_PAREN (pivot_clause|unpivot_clause)?
     |    (only_key LEFT_PAREN) => only_key LEFT_PAREN dml_table_expression_clause RIGHT_PAREN
     |    dml_table_expression_clause (pivot_clause|unpivot_clause)?
     )
         flashback_query_clause*
-        ({isTableAlias()}? alias)?
-        -> ^(TABLE_REF_ELEMENT alias? dml_table_expression_clause only_key? pivot_clause? unpivot_clause? flashback_query_clause*)
+        ({isTableAlias()}? table_alias)?
+        -> ^(TABLE_REF_ELEMENT table_alias? dml_table_expression_clause? table_ref? subquery_operation_part* only_key? pivot_clause? unpivot_clause? flashback_query_clause*)
     ;
 
 join_clause
@@ -322,7 +341,8 @@ outer_join_type
 
 query_partition_clause
     :    partition_key by_key
-    (    (LEFT_PAREN)=> expression_list
+    (    (LEFT_PAREN (select_key|with_key)) => LEFT_PAREN subquery RIGHT_PAREN
+    |    (LEFT_PAREN)=> expression_list
     |    expression (COMMA expression)*
     )
         -> ^(partition_key expression_list? (EXPR expression)*)
@@ -330,7 +350,7 @@ query_partition_clause
 
 flashback_query_clause
     :    versions_key between_key (scn_key|timestamp_key) expression -> ^(versions_key scn_key? timestamp_key? ^(EXPR expression)) 
-    |    as_key of_key (scn_key|timestamp_key) expression -> ^(as_key scn_key? timestamp_key? ^(EXPR expression))
+    |    as_key of_key (scn_key|timestamp_key|snapshot_key) expression -> ^(as_key scn_key? timestamp_key? snapshot_key? ^(EXPR expression))
     ;
 
 pivot_clause
@@ -344,8 +364,8 @@ pivot_clause
     ;
 
 pivot_element
-    :    aggregate_function_name LEFT_PAREN expression RIGHT_PAREN alias?
-        -> ^(PIVOT_ELEMENT alias? ^(EXPR ^(ROUTINE_CALL aggregate_function_name ^(ARGUMENTS ^(ARGUMENT ^(EXPR expression))))))
+    :    aggregate_function_name LEFT_PAREN expression RIGHT_PAREN column_alias?
+        -> ^(PIVOT_ELEMENT column_alias? ^(EXPR ^(ROUTINE_CALL aggregate_function_name ^(ARGUMENTS ^(ARGUMENT ^(EXPR expression))))))
     ;
 
 pivot_for_clause
@@ -371,8 +391,8 @@ pivot_in_clause
     ;
 
 pivot_in_clause_element
-    :    pivot_in_clause_elements alias?
-        -> ^(PIVOT_IN_ELEMENT alias? pivot_in_clause_elements)
+    :    pivot_in_clause_elements column_alias?
+        -> ^(PIVOT_IN_ELEMENT column_alias? pivot_in_clause_elements)
     ;
 
 pivot_in_clause_elements
@@ -402,14 +422,15 @@ unpivot_in_clause
     ;
 
 unpivot_in_elements
-    :    (    column_name
+    :   (    column_name
         |    LEFT_PAREN column_name (COMMA column_name)* RIGHT_PAREN
         )
-        as_key?
-        (    expression_wrapper
-        |    (LEFT_PAREN)=> expression_list
+        (    as_key?
+        (    constant
+        |    (LEFT_PAREN)=> LEFT_PAREN constant (COMMA constant)* RIGHT_PAREN
         )
-        -> column_name+ ^(PIVOT_ALIAS expression_wrapper? expression_list?)
+        )?
+        -> column_name+ ^(PIVOT_ALIAS constant+)
     ;
 
 hierarchical_query_clause
@@ -425,8 +446,10 @@ start_part
     ;
 
 group_by_clause
-    :    group_key by_key group_by_elements ((COMMA group_by_elements)=> COMMA group_by_elements)*
-        -> ^(group_key ^(GROUP_BY_ELEMENT group_by_elements)+)
+    :    (group_key) => group_key by_key group_by_elements ((COMMA group_by_elements)=> COMMA group_by_elements)* having_clause?
+         -> ^(group_key ^(GROUP_BY_ELEMENT group_by_elements)+ having_clause?)
+    |    (having_key) => having_clause (group_key by_key group_by_elements ((COMMA group_by_elements)=> COMMA group_by_elements)*)?
+         -> ^(group_key having_clause ^(GROUP_BY_ELEMENT group_by_elements)+)
     ;
 
 group_by_elements
@@ -497,8 +520,8 @@ model_column_list
     ;
 
 model_column
-    :    expression alias?
-        -> ^(MODEL_COLUMN alias? ^(EXPR expression)) 
+    :    expression table_alias?
+        -> ^(MODEL_COLUMN table_alias? ^(EXPR expression))
     ;
 
 model_rules_clause
@@ -649,10 +672,15 @@ values_clause
 
 // $>
 merge_statement
-    :    merge_key into_key tableview_name alias?
+    :    merge_key into_key tableview_name table_alias?
         using_key selected_tableview on_key LEFT_PAREN condition RIGHT_PAREN
-        merge_update_clause? merge_insert_clause? error_logging_clause?
-        -> ^(merge_key alias? tableview_name ^(using_key selected_tableview ^(LOGIC_EXPR condition))
+        (
+            (when_key matched_key) => merge_update_clause merge_insert_clause?
+        |
+            (when_key not_key matched_key) => merge_insert_clause merge_update_clause?
+        )?
+        error_logging_clause?
+        -> ^(merge_key table_alias? tableview_name ^(using_key selected_tableview ^(LOGIC_EXPR condition))
                  merge_update_clause? merge_insert_clause? error_logging_clause?)
     ;
 
@@ -682,8 +710,8 @@ merge_insert_clause
     ;
 
 selected_tableview
-    :    ( tableview_name | subquery ) alias?
-        -> ^(SELECTED_TABLEVIEW alias? tableview_name? subquery?)
+    :    ( tableview_name | LEFT_PAREN select_statement RIGHT_PAREN) table_alias?
+        -> ^(SELECTED_TABLEVIEW table_alias? tableview_name? select_statement?)
     ;
 
 // $>
@@ -721,8 +749,8 @@ lock_mode
 general_table_ref
     :    (    dml_table_expression_clause
         |    only_key LEFT_PAREN dml_table_expression_clause RIGHT_PAREN
-        )    alias?
-        -> ^(TABLE_REF alias? dml_table_expression_clause only_key?)
+        )    table_alias?
+        -> ^(TABLE_REF table_alias? dml_table_expression_clause only_key?)
     ;
 
 static_returning_clause
@@ -754,7 +782,7 @@ dml_table_expression_clause
     ;
 
 table_collection_expression
-    :    table_key
+    :    ( table_key | the_key)
          ( (LEFT_PAREN (select_key | with_key)) => LEFT_PAREN subquery RIGHT_PAREN
          | LEFT_PAREN expression RIGHT_PAREN //(LEFT_PAREN PLUS_SIGN RIGHT_PAREN)?
          )
@@ -771,9 +799,9 @@ subquery_restriction_clause
 
 sample_clause
     :    sample_key block_key? 
-        LEFT_PAREN expression RIGHT_PAREN
+        LEFT_PAREN e1=expression (COMMA e2=expression)? RIGHT_PAREN
         seed_part?
-        -> ^(sample_key block_key? ^(EXPR expression) seed_part?) 
+        -> ^(sample_key block_key? ^(EXPR $e1) ^(EXPR $e2)? seed_part?)
     ;
 
 seed_part
@@ -843,7 +871,7 @@ equality_expression
         |    empty_key
                 -> {isNegated}? ^(IS_NOT_EMPTY $equality_expression)
                 -> ^(IS_EMPTY $equality_expression)
-        |    of_key type_key? LEFT_PAREN type_spec (COMMA type_spec)* RIGHT_PAREN
+        |    of_key type_key? LEFT_PAREN only_key? type_spec (COMMA type_spec)* RIGHT_PAREN
                 -> {isNegated}? ^(IS_NOT_OF_TYPE $equality_expression type_spec+)
                 -> ^(IS_OF_TYPE $equality_expression type_spec+)
         )
@@ -904,6 +932,10 @@ in_elements
          -> ^(EXPR_LIST concatenation_wrapper+)
     |    constant
          -> ^(EXPR_LIST constant)
+    |    bind_variable
+         -> ^(EXPR_LIST bind_variable)
+    |    general_element
+         -> ^(EXPR_LIST general_element)
     ;
 
 between_elements
@@ -945,7 +977,7 @@ interval_expression
     ;
 
 model_expression
-    :    (keep_expression -> keep_expression) 
+    :    (unary_expression -> unary_expression)
         (LEFT_BRACKET model_expression_element RIGHT_BRACKET
             -> ^(MODEL_EXPRESSION[$LEFT_BRACKET] $model_expression model_expression_element))?
     ;
@@ -987,16 +1019,11 @@ multi_column_for_loop
         -> ^(FOR_MULTI_COLUMN[$for_key.start] column_name+ ^(in_key subquery? expression_list*))
     ;
 
-keep_expression
-    :    unary_expression
-    (    keep_key^ 
-        LEFT_PAREN! 
-            dense_rank_key (first_key|last_key)
-             order_by_clause
-        RIGHT_PAREN! over_clause?    )?
-    ;
-
 unary_expression
+options
+{
+backtrack=true;
+}
     :    MINUS_SIGN unary_expression -> ^(UNARY_OPERATOR[$MINUS_SIGN] unary_expression)
     |    PLUS_SIGN unary_expression -> ^(UNARY_OPERATOR[$PLUS_SIGN] unary_expression)
     |    prior_key^ unary_expression
@@ -1051,10 +1078,19 @@ case_else_part
 // $>
 
 atom
+options
+{
+backtrack=true;
+}
     :    (table_element outer_join_sign) => table_element outer_join_sign
+    |    bind_variable
     |    constant
     |    general_element
-    |    LEFT_PAREN! ((select_key)=> subquery|expression_or_vector) RIGHT_PAREN!
+    |    LEFT_PAREN!
+         (
+              ( select_key | with_key)=> subquery RIGHT_PAREN! subquery_operation_part*
+              | expression_or_vector RIGHT_PAREN!
+         )
     ;
 
 expression_or_vector
@@ -1071,7 +1107,7 @@ vector_expr
 
 quantified_expression
     :    ( some_key^ | exists_key^ | all_key^ | any_key^ )
-         ( (LEFT_PAREN select_key) => LEFT_PAREN! query_block RIGHT_PAREN!
+         ( (LEFT_PAREN (select_key|with_key)) => LEFT_PAREN! subquery RIGHT_PAREN!
            | LEFT_PAREN! expression_wrapper RIGHT_PAREN!
          )
     ;
@@ -1081,7 +1117,7 @@ standard_function
     |    stantard_function_enabling_using^ function_argument using_clause?
     |    count_key^
             LEFT_PAREN!
-                ( ASTERISK | concatenation_wrapper ) 
+                ( ASTERISK | (distinct_key|unique_key|all_key)? concatenation_wrapper )
             RIGHT_PAREN! over_clause?
     |    (cast_key^|xmlcast_key^) 
             LEFT_PAREN!
@@ -1137,17 +1173,20 @@ standard_function
             LEFT_PAREN! 
                 expression_wrapper order_by_clause? 
             RIGHT_PAREN!
+            (PERIOD general_element_part)?
     |    (xmlcolattval_key^|xmlforest_key^) 
             LEFT_PAREN!
                 xml_multiuse_expression_element (COMMA! xml_multiuse_expression_element)*
             RIGHT_PAREN!
+            (PERIOD general_element_part)?
     |    xmlelement_key^
             LEFT_PAREN!
                 (entityescaping_key|noentityescaping_key)?
                 (name_key|evalname_key)? expression_wrapper
                 ({input.LT(2).getText().equalsIgnoreCase("xmlattributes")}? COMMA! xml_attributes_clause)?
-                (COMMA! expression_wrapper alias?)*
+                (COMMA! expression_wrapper column_alias?)*
             RIGHT_PAREN!
+            (PERIOD general_element_part)?
     |    xmlexists_key^
             LEFT_PAREN!
                 expression_wrapper
@@ -1157,6 +1196,7 @@ standard_function
             LEFT_PAREN! 
                 (document_key|content_key) concatenation_wrapper wellformed_key?
             RIGHT_PAREN!
+            (PERIOD general_element_part)?
     |    xmlpi_key^
             LEFT_PAREN! 
                 (    name_key id
@@ -1164,17 +1204,20 @@ standard_function
                 )
                 (COMMA! concatenation_wrapper)?
             RIGHT_PAREN!
+            (PERIOD general_element_part)?
     |    xmlquery_key^
             LEFT_PAREN! 
                 concatenation_wrapper xml_passing_clause?
                 returning_key! content_key! (null_key on_key! empty_key!)?
             RIGHT_PAREN!
+            (PERIOD general_element_part)?
     |    xmlroot_key^
             LEFT_PAREN!
                 concatenation_wrapper
                     xmlroot_param_version_part
                     (COMMA! xmlroot_param_standalone_part)?
             RIGHT_PAREN!
+            (PERIOD general_element_part)?
     |    xmlserialize_key^
             LEFT_PAREN!
                 (document_key|content_key)
@@ -1184,6 +1227,7 @@ standard_function
                 xmlserialize_param_ident_part?
                 ((hide_key|show_key) defaults_key)?
             RIGHT_PAREN!
+            (PERIOD general_element_part)?
     |    xmltable_key^
             LEFT_PAREN!
                 xml_namespaces_clause?
@@ -1191,6 +1235,7 @@ standard_function
                 xml_passing_clause?
                 (columns_key! xml_table_column (COMMA! xml_table_column))?
             RIGHT_PAREN!
+            (PERIOD general_element_part)?
     ;
 
 stantard_function_enabling_over
@@ -1245,8 +1290,8 @@ using_clause
     ;
 
 using_element
-    :    (in_key out_key?|out_key)? select_list_elements alias?
-        -> ^(ELEMENT in_key? out_key? select_list_elements alias?)
+    :    (in_key out_key?|out_key)? select_list_elements column_alias?
+        -> ^(ELEMENT in_key? out_key? select_list_elements column_alias?)
     ;
 
 collect_order_by_part
@@ -1268,7 +1313,7 @@ cost_matrix_clause
 
 xml_passing_clause
     :    passing_key^ (by_key! value_key)?
-            expression_wrapper alias? (COMMA! expression_wrapper alias?)
+            expression_wrapper column_alias? (COMMA! expression_wrapper column_alias?)
     ;
 
 xml_attributes_clause
@@ -1283,8 +1328,8 @@ xml_attributes_clause
 xml_namespaces_clause
     :    xmlnamespaces_key^
         LEFT_PAREN!
-            (concatenation_wrapper alias)? 
-                (COMMA! concatenation_wrapper alias)*
+            (concatenation_wrapper column_alias)?
+                (COMMA! concatenation_wrapper column_alias)*
             ((default_key)=> xml_general_default_part)?
         RIGHT_PAREN!
     ;

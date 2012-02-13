@@ -24,271 +24,179 @@ group_by_clause:
 "group by country_name,prod_name,calendar_year" OK
 
 select_statement:
-<<select d.department_id as d_dept_id, e.department_id as e_dept_id, e.last_name
-   from departments d full outer join employees e
-   on d.department_id = e.department_id
-   order by d.department_id, e.last_name>> OK
-<<select department_id as d_e_dept_id, e.last_name
-   from departments d full outer join employees e
-   using (department_id)
-   order by department_id, e.last_name>> OK
-<<select d.department_id, e.last_name
-   from m.departments d right outer join n.employees e
-   on d.department_id = e.department_id
-   order by d.department_id, e.last_name>> OK
-<<select d.department_id, e.last_name
-   from departments d, employees e
-   where d.department_id = e.department_id(+)
-   order by d.department_id, e.last_name>> OK
-<<select times.time_id, product, quantity from inventory
-   partition by  (product)
-   right outer join times on (times.time_id = inventory.time_id)
-   where times.time_id between TO_date('01/04/01', 'DD/MM/YY')
-      and TO_date('06/04/01', 'DD/MM/YY')
-   order by  2,1>> OK
-<<select * from dual d1
-   join dual d2 on (d1.dummy = d2.dummy)
-   join dual d3 on(d1.dummy = d3.dummy)
-   join dual on(d1.dummy = dual.dummy)>> OK
-<<select * from t1
-   join t2 tt2 using(c)
-   join t3 tt3 using(d)
-   join t3 using(d)>> OK
-<<select * from dual t1
-   join (select * from dual) tt2 using(DUMMY)
-   join (select * from dual) using(DUMMY)
-   join (select * from dual) D on(D.dummy=tt3.dummy)
-   inner join (select * from dual) tt2 using(dummy)
-   inner join (select * from dual) using(dummy)
-   inner join (select * from dual) D on(D.dummy=t1.dummy)>> OK
-<<select * from dual t1
-   left outer join (select * from dual) tt2 using(DUMMY)
-   left outer join (select * from dual) using(DUMMY)
-   left outer join (select * from dual) D on(D.dummy=tt3.dummy)
-   inner join (select * from dual) tt2 using(dummy)
-   inner join (select * from dual) using(dummy)
-   inner join (select * from dual) D on(D.dummy=t1.dummy)>> OK
-<<select * from dual t1,
-    (
-        dual left outer join (select * from dual) tt2 using(DUMMY)
-    )>> OK
-<<select * from t1, ( t2 left outer join t3 using(dummy))>> OK
-<<select * from dual,( dual left outer join tt2 using(DUMMy))>> OK
-<<select * from t1,
-       ((((
-        t2 left outer join t3 using(dummy)
-       ))))>> OK
-<<select * from dual t1,
-(
-        (
-                (
-                        dual t2 join dual t3 using(dummy)
-                )
-                        left outer join dual t4 using(dummy)
-        )
-                        left outer join dual t5 using(dummy)
-)
->> OK
-<<select * from dual t1, ( dual t2 join dual t3 using(dummy)) left outer join dual t4 using (dummy)>> OK
-<<select * from dual t1,
-                        dual t2 join dual t3 using(dummy)
-                        left outer join dual t4 using(dummy)
-                        left outer join dual t5 using(dummy)>> OK
-<<select *
-    from hdr a
-    inner join sh s
-    inner join ca c
-    on c.id = s.id
-    on a.va = s.va>> OK
-<<select department_id as d_e_dept_id, e.last_name
-   from departments
-   full outer join employees on (a=b)
-   left outer join employees on (a=b)
-   right outer join employees on (a=b)
-   join employees on (a=b)
-   inner join employees on (a=b)
-   cross join employees
-   natural join employees
->> OK
-<<select d1.*, d2.* from dual d1 cross join dual d2>> OK
-<<select d1.*, d2.* from dual cross join dual >> OK
-<<select * from sys.dual natural join sys.dual >> OK
-<<select * from v.e
-where
-	c <> r
-	and  r  not in
-	(
-		(select distinct  r  from  v.s )
-		union
-		(select distinct  r  from v.p )
-	)
-	and  "timestamp" <= 1298505600000>> OK
-<<select cast(collect(cattr(aname, op, to_char(val), support, confidence)) as cattrs) cl_attrs from t>> OK
-<<select
- interval '4 5:12:10.222' day to second(3)
-,interval '4 5:12' day to minute
-,interval '400 5' day(3) to hour
-,interval '400' day(3)
-,interval '11:12:10.2222222' hour to second(7)
-,interval '11:20' hour to minute
-,interval '10' hour
-,interval '10:22' minute to second
-,interval '10' minute
-,interval '4' day
-,interval '25' hour
-,interval '40' minute
-,interval '120' hour(3)
-,interval '30.12345' second(2,4)
-,interval :a day
-from dual>> OK
-<<select
-timestamp '2009-10-29 01:30:00',
-timestamp '2009-10-29 01:30:00' at time zone 'us/pacific'from dual>> OK
-<<select from_tz(cast(to_date('1999-12-01 11:00:00','yyyy-mm-dd hh:mi:ss') as timestamp), 'america/New_York') at time zone 'america/Los_angeles' "West Coast Time" from dual>> OK
-<<select *
-from "P"
-where
--- note there are no parens around 231092
-( ( "P"."ID" in 231092 ) )>> OK
-<< select *
-from  t1, t2
-where (trunc(t1.timestamp) between to_date('110226','yymmdd') and to_date('110326','yymmdd'))
-and t1.code(+) = 'cn'
-and t1.id(+)=t2.id
-and t1.cid=t2.cid
-and t1.mid = 1245714070376993504
-and t1.tmst >= to_date('110226','yymmdd')
--- note: this is possible too "column_spec outer_join_sign conditional_operator
-and shipper.alt_party_code(+) is null
-and t2.code(+) = 'sh'
-and t1.sid(+)=t2.sid
-and ( ( t1.scode like 'mmm'  and t2.scode like 'xax' ) )>> OK
-<<select distinct X
-from X,Y,Z
-where
-    X.id = Z.id (+)
-and nvl(X.cid, '^') = nvl(Y.clientid (+), '^')
-and 0 = Lib.SKU(X.sid, nvl(Z.cid, '^'))>> OK
-<<select time_id, product
-   , last_value(quantity ignore nulls) over (partition by product order by time_id) quantity
-   , last_value(quantity respect nulls) over (partition by product order by time_id) quantity
-   from ( select times.time_id, product, quantity
-             from inventory partition by  (product)
-                right outer join times on (times.time_id = inventory.time_id)
-   where times.time_id between to_date('01/04/01', 'DD/MM/YY')
-      and to_date('06/04/01', 'DD/MM/YY'))
-   order by  2,1>> OK
-<<select dummy,
-dummy D,
-'DDD' as DDD,
-'DDD' as "DFDF",
-'1' as
-from dual>> OK
-<<select
- 1
- , cursor(select 1 from dual) C1
- , cursor(select 2, 3 from dual) as C2
- from
- table(select 1 from dual)>> OK
-<<select e1.last_name from employees e1
- where f( cursor(select e2.hire_date from employees e2 where e1.employee_id = e2.manager_id), e1.hire_date) = 1
-order by last_name>> OK
-<<select title into my_title
- from
- table(select courses from department where name = 'history')
- where name like '%Etruscan%'>> OK
-<<select deptno
-        , ename
-        , hiredate
-        , listagg(ename, ',') within group (order by hiredate) over (partition by deptno) as employees
-from emp
->> OK
-<<select trim(both ' ' from '  a  ') from dual where trim(:a) is not null>> OK
-<<with o as
-(
-        select 'a' obj, 'b' link from dual union all
-        select 'a', 'c' from dual union all
-        select      'c', 'd' from dual union all
-        select           'd', 'c' from dual union all
-        select           'd', 'e' from dual union all
-        select                'e', 'e' from dual
-)
-select
-  connect_by_root obj root,
-  level,
-  obj,link,
-  sys_connect_by_path(obj||'->'||link,','),
-  connect_by_iscycle,
-  connect_by_isleaf
-from o
-connect by nocycle obj=prior link
-start with obj='a'
->> OK
-<<select * from dual where 1 < > 2 and 1 ! = 2 and 1 ^ /*aaa */ = 2>> OK
-<<select 'A' | | 'B'  from dual>> OK
-<<select date '1900-01-01' from dual>> OK
-<<select *
-from A3
-where
-	 "A3"."M_ID"="A2"."M_ID"
-	 and "A3"."MI_T" =
-	 any (((
-	        select "A4"."SYS$"."ID" from A4
-	)))
->> OK
-<<select *
-from A3
-where
-	 "A3"."M_ID"="A2"."M_ID"
-	 and "A3"."MI_T" =
-	 any ( select "A4"."SYS$"."ID" from A4 )
->> OK
-<<with
-  REPORTS_TO_101 (EID, EMP_LAST, MGR_ID, REPORTLEVEL) as
-  (
-     select EMPLOYEE_ID, LAST_NAME, MANAGER_ID, 0 REPORTLEVEL
-     from EMPLOYEES
-     where EMPLOYEE_ID = 101
-     union all
-     select E.EMPLOYEE_ID, E.LAST_NAME, E.MANAGER_ID, REPORTLEVEL+1
-     from REPORTS_TO_101 R, EMPLOYEES E
-     where R.EID = E.MANAGER_ID
-  )
-select EID, EMP_LAST, MGR_ID, REPORTLEVEL
-from REPORTS_TO_101 R, AUTO A
-where R.C1 = A.C2
-order by REPORTLEVEL, EID>> OK
-<<
-with
-  ORG_CHART (EID, EMP_LAST, MGR_ID, REPORTLEVEL, SALARY, JOB_ID) as
-  (
-    select EMPLOYEE_ID, LAST_NAME, MANAGER_ID, 0 REPORTLEVEL, SALARY, JOB_ID
-    from EMPLOYEES
-    where MANAGER_ID is null
-  union all
-    select E.EMPLOYEE_ID, E.LAST_NAME, E.MANAGER_ID,
-           R.REPORTLEVEL+1 REPORTLEVEL, E.SALARY, E.JOB_ID
-    from ORG_CHART R, EMPLOYEES E
-    where R.EID = E.MANAGER_ID
-  )
-  search depth first by EMP_LAST set ORDER1
-select LPAD(' ',2*REPORTLEVEL)||EMP_LAST EMP_NAME, EID, MGR_ID, SALARY, JOB_ID
-from ORG_CHART
-order by ORDER1>> OK
-<<select :1, :X, :1 + 1, 1 + :2 from A where A=:3 and b= : 4 and c= :5and :A = :b>> OK
-<<select
-  'Hello'
-, 'ORACLE.dbs'
-, 'Jackie''s raincoat'
-, '09-MAR-98'
-, ''
-, ''''
-, q'!name LIKE '%DBMS_%%'!'
-, q'<'So,' she said, 'It's finished.'>'
-, q'{SELECT * FROM employees WHERE last_name = 'Smith';}'
-, q'"name like '['"'
-, N'nchar literal'
-from dual>> OK
+join01.sql OK
+join02.sql OK
+join03.sql OK
+join04.sql OK
+join05.sql OK
+join06.sql OK
+join07.sql OK
+join08.sql OK
+join09.sql OK
+join10.sql OK
+join11.sql OK
+join12.sql OK
+join13.sql OK
+join14.sql OK
+join15.sql OK
+join16.sql OK
+join17.sql OK
+join18.sql OK
+join19.sql OK
+join20.sql OK
+join21.sql OK
+interval01.sql OK
+interval02.sql OK
+interval03.sql OK
+interval04.sql OK
+datetime01.sql OK
+datetime02.sql OK
+datetime03.sql OK
+datetime04.sql OK
+datetime05.sql OK
+query_factoring01.sql OK
+query_factoring02.sql OK
+query_factoring03.sql OK
+query_factoring04.sql OK
+query_factoring05.sql OK
+query_factoring06.sql OK
+query_factoring07.sql OK
+query_factoring08.sql OK
+query_factoring09.sql OK
+query_factoring10.sql OK
+query_factoring11.sql OK
+condition01.sql OK
+condition02.sql OK
+condition03.sql OK
+condition04.sql OK
+condition05.sql OK
+condition06.sql OK
+condition07.sql OK
+condition08.sql OK
+condition09.sql OK
+condition10.sql OK
+condition11.sql OK
+condition12.sql OK
+condition14.sql OK
+condition15.sql OK
+condition16.sql OK
+like01.sql OK
+for_update01.sql OK
+for_update02.sql OK
+for_update03.sql OK
+for_update04.sql OK
+for_update05.sql OK
+for_update06.sql OK
+for_update07.sql OK
+for_update08.sql OK
+string01.sql OK
+aggregate01.sql OK
+analytic_query02.sql OK
+analytic_query03.sql OK
+analytic_query04.sql OK
+analytic_query05.sql OK
+analytic_query06.sql OK
+cast_multiset01.sql OK
+cast_multiset02.sql OK
+cast_multiset03.sql OK
+cast_multiset04.sql OK
+cast_multiset05.sql OK
+cast_multiset06.sql OK
+cast_multiset07.sql OK
+cast_multiset08.sql OK
+case_when01.sql OK
+case_when02.sql OK
+case_when03.sql OK
+case_when04.sql OK
+case_when05.sql OK
+lexer01.sql OK
+lexer02.sql OK
+lexer03.sql OK
+lexer04.sql OK
+lexer05.sql OK
+columns01.sql OK
+//bindvar01.sql OK insert
+bindvar02.sql OK
+bindvar03.sql OK
+bindvar04.sql OK
+bindvar05.sql OK
+model_clause01.sql OK
+model_clause02.sql OK
+model_clause03.sql OK
+model_clause04.sql OK
+model_clause05.sql OK
+union01.sql OK
+union02.sql OK
+union03.sql OK
+union04.sql OK
+union05.sql OK
+union06.sql OK
+union07.sql OK
+union08.sql OK
+union09.sql OK
+union10.sql OK
+connect_by01.sql OK
+connect_by02.sql OK
+connect_by03.sql OK
+connect_by04.sql OK
+connect_by05.sql OK
+groupby01.sql OK
+groupby02.sql OK
+groupby03.sql OK
+groupby04.sql OK
+groupby05.sql OK
+groupby06.sql OK
+groupby07.sql OK
+order_by01.sql OK
+order_by02.sql OK
+order_by03.sql OK
+order_by04.sql OK
+order_by05.sql OK
+order_by06.sql OK
+dblink01.sql OK
+function01.sql OK
+function02.sql OK
+function03.sql OK
+function04.sql OK
+function05.sql OK
+//function06.sql OK fails PL/SQL construct
+pivot01.sql OK
+pivot02.sql OK
+pivot03.sql OK
+pivot04.sql OK
+pivot05.sql OK
+pivot06.sql OK
+pivot07.sql OK
+pivot08.sql OK
+pivot09.sql OK
+pivot10.sql OK
+pivot11.sql OK
+pivot12.sql OK
+comment01.sql OK
+simple02.sql OK
+simple03.sql OK
+simple04.sql OK
+simple05.sql OK
+simple06.sql OK
+simple07.sql OK
+simple08.sql OK
+simple09.sql OK
+simple10.sql OK
+simple11.sql OK
+simple12.sql OK
+simple13.sql OK
+object_access01.sql OK
+sample01.sql OK
+numbers01.sql OK
+flashback01.sql OK
+keywordasidentifier01.sql OK
+keywordasidentifier02.sql OK
+keywordasidentifier03.sql OK
+keywordasidentifier04.sql OK
+keywordasidentifier05.sql OK
+//xmltable01.sql OK
+xmltable02.sql OK
+
 "select * from tablex, tabley" OK
 <<with
    dept_costs as ( 
@@ -502,10 +410,6 @@ table_ref_aux:
   versions between timestamp 
     systimestamp and systimestamp2>> OK
 "employees e"  OK
-"employees as e"  OK
-<<employees 
-  versions between timestamp 
-    systimestamp and systimestamp2 as e>> OK
 <<employees 
   versions between timestamp 
     systimestamp and systimestamp2 e>> OK
@@ -536,13 +440,14 @@ select*from table_3
  union 
 select*from table_4>>
     OK
-"select a,b into :VarA,:FrmA.FieldB,: _WIN12503 cc from table_1" OK
+"select a,b into :VarA,:FrmA_FieldB,:cc_ from table_1" OK
 
 "select A from (select B from (select C from d) cross join table_b b)" OK
-"select 0 from (select B from (select * from C) cross join table_b as b)" OK
 
-"select * from a where a<> : Var1" OK
-"select * from b where a<=:frmF1.clsC1.dfDF1.instI1 --EXF4" OK
+"select * from a where a<> :Var1" OK
+"select * from a where a<> : 11" OK
+<<select * from a where a<> :"11">> OK
+"select * from b where a<=:frmF1_clsC1_dfDF1_instI1 --EXF4" OK
 "select*from c where a>aa" OK
 
 insert_statement:
@@ -695,23 +600,10 @@ update_statement:
    returning salary into :bnd1>>  OK
 
 merge_statement:
-<<merge into bonuses d 
-   using (select employee_id.* from employees) s 
-   on (employee_id = a) 
-   when matched then update set d.bonus = bonus 
-     delete where (salary > 8000)
-   when not matched then insert (d.employee_id, d.bonus) 
-     values (s.employee_id, s.salary)
-     where (s.salary <= 8000)>> OK
-<<merge into bonuses d 
-   using (select employee_id.* from employees) s 
-   on (employee_id = a) 
-   when matched then update set d.bonus = bonus 
-     delete where (salary > 8000)
-   when not matched then insert (d.employee_id, d.bonus) 
-     values (s.employee_id, s.salary)
-     where (s.salary <= 8000)
-   log errors into errlog ('my_bad') reject limit 10>> OK
+merge01.sql OK
+merge02.sql OK
+merge03.sql OK
+merge04.sql OK
 
 lock_table_statement:
 <<lock table employees 
@@ -745,3 +637,5 @@ lock_table_statement:
    in row share mode 
    wait 10>> OK
 
+explain_statement:
+explain01.sql OK

@@ -22,7 +22,7 @@ options {
     tokenVocab=PLSQLLexer;
 }
 
-import PLSQLKeys, PLSQLCommons, PLSQL_DMLParser;
+import PLSQLKeys, PLSQLCommons, PLSQL_DMLParser, SQLPLUSParser;
 
 tokens {
     COMPILATION_UNIT;
@@ -144,21 +144,18 @@ package br.com.porcelli.parser.plsql;
 
 }
 
+swallow_to_semi
+    :    ~( SEMICOLON )+
+    ;
+
 compilation_unit
     :    unit_statement* EOF
         -> ^(COMPILATION_UNIT unit_statement*)
     ;
 
 sql_script
-    :    serveroutput_declaration?
-        seq_of_statements
-        exit_key? EOF
-        -> ^(SQL_SCRIPT serveroutput_declaration? seq_of_statements)
-    ;
-
-serveroutput_declaration
-    :    set_key serveroutput_key (on_key|off_key) SEMICOLON?
-    -> ^(SET_SERVEROUTPUT[$set_key.start] on_key? off_key?)
+    :   (unit_statement|sql_plus_command)* EOF
+        -> ^(SQL_SCRIPT sql_plus_command* unit_statement*)
     ;
 
 unit_statement
@@ -546,7 +543,7 @@ referencing_clause
     ;
 
 referencing_element
-    :    ( new_key^ | old_key^ | parent_key^ ) alias
+    :    ( new_key^ | old_key^ | parent_key^ ) column_alias
     ;
 
 // $>
@@ -1082,7 +1079,7 @@ table_var_dec
 // $<PL/SQL Statements
 
 seq_of_statements
-    :     (statement SEMICOLON|label_declaration)+
+    :     (statement (SEMICOLON|EOF)|label_declaration)+
         -> ^(STATEMENTS label_declaration* statement*)
     ;  
 
@@ -1094,7 +1091,14 @@ label_declaration
 statement
 options{
 backtrack=true;
-}    :    assignment_statement
+}
+    :    create_key swallow_to_semi (SEMICOLON|EOF)
+    |    alter_key swallow_to_semi  (SEMICOLON|EOF)
+    |    grant_key swallow_to_semi  (SEMICOLON|EOF)
+    |    truncate_key swallow_to_semi  (SEMICOLON|EOF)
+    |    (begin_key) => body
+    |    (declare_key) => block
+    |    assignment_statement
     |    continue_statement
     |    exit_statement
     |    goto_statement
@@ -1107,13 +1111,11 @@ backtrack=true;
     |    case_statement[true]
     |    sql_statement
     |    function_call
-    |    body
-    |    block
     ;
 
 assignment_statement
-    :     general_element ASSIGN_OP expression
-        -> ^(ASSIGN[$ASSIGN_OP] general_element ^(EXPR expression))
+    :     (general_element|bind_variable) ASSIGN_OP expression
+        -> ^(ASSIGN[$ASSIGN_OP] general_element? bind_variable? ^(EXPR expression))
     ;
 
 continue_statement
@@ -1217,7 +1219,7 @@ return_statement
     ;
 
 function_call
-    :    routine_name function_argument?
+    :    call_key? routine_name function_argument?
         -> ^(ROUTINE_CALL routine_name function_argument?)
     ;
 
@@ -1302,7 +1304,7 @@ cursor_manipulation_statements
     ;
 
 close_statement
-    :     close_key^ variable_name 
+    :     close_key^ cursor_name
     ;
 
 open_statement

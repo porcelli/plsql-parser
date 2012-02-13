@@ -1016,6 +1016,10 @@ scn_key
     :    {input.LT(1).getText().equalsIgnoreCase("scn")}?=> REGULAR_ID
     ;
 
+snapshot_key
+    :    {input.LT(1).getText().equalsIgnoreCase("snapshot")}?=> REGULAR_ID
+    ;
+
 decrement_key
     :    {input.LT(1).getText().equalsIgnoreCase("decrement")}?=> REGULAR_ID
     ;
@@ -1293,8 +1297,8 @@ passing_key
     :    {input.LT(1).getText().equalsIgnoreCase("passing")}?=> REGULAR_ID
     ;
 
-columns_key
-    :    PLSQL_RESERVED_COLUMNS
+columns_key //: PLSQL_RESERVED_COLUMNS
+    :    {input.LT(1).getText().equalsIgnoreCase("columns")}?=> REGULAR_ID
     ;
 
 indent_key
@@ -1367,6 +1371,26 @@ ordinality_key
 
 defaults_key
     :    {input.LT(1).getText().equalsIgnoreCase("defaults")}?=> REGULAR_ID
+    ;
+
+sqlerror_key
+    :    {input.LT(1).getText().equalsIgnoreCase("sqlerror")}? REGULAR_ID 
+    ;
+	
+oserror_key
+    :    {input.LT(1).getText().equalsIgnoreCase("oserror")}? REGULAR_ID 
+    ;
+
+success_key
+    :    {input.LT(1).getText().equalsIgnoreCase("success")}? REGULAR_ID 
+    ;
+
+warning_key
+    :    {input.LT(1).getText().equalsIgnoreCase("warning")}? REGULAR_ID 
+    ;
+
+failure_key
+    :    {input.LT(1).getText().equalsIgnoreCase("failure")}? REGULAR_ID 
     ;
 
 insert_key
@@ -2009,6 +2033,10 @@ minute_key
     :    {input.LT(1).getText().equalsIgnoreCase("minute")}? REGULAR_ID
     ;
 
+whenever_key
+    :    {input.LT(1).getText().equalsIgnoreCase("whenever")}? REGULAR_ID
+    ;
+
 is_key
     :    SQL92_RESERVED_IS
     ;
@@ -2019,6 +2047,10 @@ else_key
 
 table_key
     :    SQL92_RESERVED_TABLE
+    ;
+
+the_key
+    :    SQL92_RESERVED_THE
     ;
 
 then_key

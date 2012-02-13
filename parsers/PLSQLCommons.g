@@ -78,7 +78,7 @@ partition_extension_clause
         for_key!? expression_list
     ;
 
-alias
+column_alias
 options
 {
 backtrack=true;
@@ -86,6 +86,11 @@ backtrack=true;
     :    as_key? (id|alias_quoted_string)
     ->    ^(ALIAS id? alias_quoted_string?)
     |    as_key
+    ;
+
+table_alias
+    :    ( id | alias_quoted_string )
+    ->   ^(ALIAS id? alias_quoted_string?)
     ;
 
 alias_quoted_string
@@ -227,13 +232,11 @@ trigger_name
     ;
 
 variable_name
-@init    {    boolean isHosted = false;    }
-    :    (COLON {isHosted = true;})? (INTRODUCER char_set_name)?
-            id_expression (((PERIOD|COLON) id_expression)=> (PERIOD|COLON) id_expression)?
-        ->{isHosted}? ^(HOSTED_VARIABLE_NAME char_set_name? id_expression*)
+    :    (INTRODUCER char_set_name)?
+            id_expression ((PERIOD id_expression)=> PERIOD id_expression)?
         -> ^(VARIABLE_NAME char_set_name? id_expression*)
-    |    (COLON UNSIGNED_INTEGER)
-        -> ^(HOSTED_VARIABLE_NAME UNSIGNED_INTEGER)
+    |    bind_variable
+        -> ^(HOSTED_VARIABLE_NAME bind_variable)
     ;
 
 index_name
@@ -242,12 +245,12 @@ index_name
     ;
 
 cursor_name
-    :    id
-        -> ^(CURSOR_NAME id)
+    :    (id | bind_variable)
+        -> ^(CURSOR_NAME id? bind_variable?)
     ;
 
 record_name
-    :    id
+    :    (id | bind_variable)
         ->^(RECORD_NAME id)
     ;
 
@@ -283,11 +286,21 @@ char_set_name
 
 // $<Common PL/SQL Specs
 
+// NOTE: In reality this applies to aggregate functions only
+keep_clause
+    :   keep_key^
+        LEFT_PAREN!
+            dense_rank_key (first_key|last_key)
+             order_by_clause
+        RIGHT_PAREN! over_clause?
+    ;
+
 function_argument
     :    LEFT_PAREN 
             argument? (COMMA argument )* 
         RIGHT_PAREN
-        -> ^(ARGUMENTS argument*)
+        keep_clause?
+        -> ^(ARGUMENTS argument* keep_clause?)
     ;
 
 function_argument_analytic
@@ -295,7 +308,21 @@ function_argument_analytic
             (argument respect_or_ignore_nulls?)?
             (COMMA argument respect_or_ignore_nulls? )*
          RIGHT_PAREN
-         -> ^(ARGUMENTS argument*)
+         keep_clause?
+         -> ^(ARGUMENTS argument* keep_clause?)
+    ;
+
+function_argument_modeling
+    :    LEFT_PAREN
+            column_name (COMMA (numeric|null_key) (COMMA (numeric|null_key) )? )?
+            using_key
+                ( (tableview_name PERIOD ASTERISK)=> tableview_name PERIOD ASTERISK
+                | ASTERISK
+                | expression column_alias? (COMMA expression column_alias?)*
+                )
+         RIGHT_PAREN
+         keep_clause?
+         -> ^(ARGUMENTS column_name keep_clause?)
     ;
 
 respect_or_ignore_nulls
@@ -388,23 +415,26 @@ native_datatype_element
     |    mlslabel_key
     ;
 
+bind_variable
+    :    ( b1=BINDVAR | COLON u1=UNSIGNED_INTEGER)
+         ( indicator_key? (b2=BINDVAR | COLON u2=UNSIGNED_INTEGER))?
+         ((PERIOD general_element_part)=> PERIOD general_element_part)*
+         ->^(HOSTED_VARIABLE_NAME $b1? $u1? indicator_key? $b2? $u2? general_element_part*)
+    ;
+
 general_element
-@init    {    boolean isCascated = true;    }
-    :    general_element_part (((PERIOD|COLON) general_element_part)=> (PERIOD|COLON) general_element_part {isCascated = true;})*
+@init    { boolean isCascated = true; }
+    :    general_element_part ((PERIOD general_element_part)=> PERIOD general_element_part {isCascated = true;})*
         ->{isCascated}? ^(CASCATED_ELEMENT general_element_part+)
         -> general_element_part
     ;
 
 general_element_part
-@init    {    boolean isHosted = false; boolean isRoutineCall = false;    }
-    :    (INTRODUCER char_set_name)? (COLON {isHosted = true;})? id_expression 
-            (((PERIOD|COLON) id_expression)=> (PERIOD|COLON) id_expression)* (function_argument {isRoutineCall = true;})?
-        ->{isHosted && isRoutineCall}? ^(HOSTED_VARIABLE_ROUTINE_CALL ^(ROUTINE_NAME char_set_name? id_expression+) function_argument)
-        ->{isHosted && !isRoutineCall}? ^(HOSTED_VARIABLE char_set_name? id_expression+)
-        ->{!isHosted && isRoutineCall}? ^(ROUTINE_CALL ^(ROUTINE_NAME char_set_name? id_expression+) function_argument)
+@init    { boolean isRoutineCall = false; }
+    :    (INTRODUCER char_set_name)? id_expression
+            ((PERIOD id_expression)=> PERIOD id_expression)* (function_argument {isRoutineCall = true;})?
+        ->{isRoutineCall}? ^(ROUTINE_CALL ^(ROUTINE_NAME char_set_name? id_expression+) function_argument)
         -> ^(ANY_ELEMENT char_set_name? id_expression+)
-        | (COLON UNSIGNED_INTEGER)
-        -> ^(HOSTED_VARIABLE COLON UNSIGNED_INTEGER)
     ;
 
 table_element
@@ -417,7 +447,13 @@ table_element
 // $<Lexer Mappings
 
 constant
-    :    timestamp_key quoted_string (at_key time_key zone_key quoted_string)?
+    :    timestamp_key (quoted_string | bind_variable) (at_key time_key zone_key quoted_string)?
+    |    interval_key (quoted_string | bind_variable | general_element_part)
+         ( day_key | hour_key | minute_key | second_key)
+         ( LEFT_PAREN (UNSIGNED_INTEGER | bind_variable) (COMMA (UNSIGNED_INTEGER | bind_variable) )? RIGHT_PAREN)?
+         ( to_key
+             ( day_key | hour_key | minute_key | second_key (LEFT_PAREN (UNSIGNED_INTEGER | bind_variable) RIGHT_PAREN)? )
+         )?
     |    numeric
     |    date_key quoted_string
     |    quoted_string

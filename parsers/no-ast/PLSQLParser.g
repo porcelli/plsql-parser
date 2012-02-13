@@ -21,7 +21,7 @@ options {
     tokenVocab=PLSQLLexer;
 }
 
-import PLSQLKeys, PLSQLCommons, PLSQL_DMLParser;
+import PLSQLKeys, PLSQLCommons, PLSQL_DMLParser, SQLPLUSParser;
 
 @header {
 /**
@@ -45,18 +45,16 @@ package br.com.porcelli.parser.plsql;
 
 }
 
+swallow_to_semi
+    :    ~( SEMICOLON )+
+    ;
+
 compilation_unit
     :    unit_statement* EOF
     ;
 
 sql_script
-    :    serveroutput_declaration?
-        seq_of_statements
-        exit_key? EOF
-    ;
-
-serveroutput_declaration
-    :    set_key serveroutput_key (on_key|off_key) SEMICOLON?
+    :   (unit_statement|sql_plus_command)* EOF
     ;
 
 unit_statement
@@ -89,6 +87,7 @@ backtrack=true;
     |    drop_sequence
     |    drop_trigger
     |    drop_type
+    |    data_manipulation_language_statements
     ;
 
 // $<DDL -> SQL Statements for Stored PL/SQL Units
@@ -379,7 +378,7 @@ referencing_clause
     ;
 
 referencing_element
-    :    ( new_key | old_key | parent_key ) alias
+    :    ( new_key | old_key | parent_key ) column_alias
     ;
 
 // $>
@@ -823,7 +822,7 @@ table_var_dec
 // $<PL/SQL Statements
 
 seq_of_statements
-    :     (statement SEMICOLON|label_declaration)+
+    :     (statement (SEMICOLON|EOF)|label_declaration)+
     ;  
 
 label_declaration
@@ -833,7 +832,14 @@ label_declaration
 statement
 options{
 backtrack=true;
-}    :    assignment_statement
+}
+    :    create_key swallow_to_semi (SEMICOLON|EOF)
+    |    alter_key swallow_to_semi  (SEMICOLON|EOF)
+    |    grant_key swallow_to_semi  (SEMICOLON|EOF)
+    |    truncate_key swallow_to_semi  (SEMICOLON|EOF)
+    |    (begin_key) => body
+    |    (declare_key) => block
+    |    assignment_statement
     |    continue_statement
     |    exit_statement
     |    goto_statement
@@ -846,12 +852,10 @@ backtrack=true;
     |    case_statement[true]
     |    sql_statement
     |    function_call
-    |    body
-    |    block
     ;
 
 assignment_statement
-    :     general_element ASSIGN_OP expression
+    :     (general_element|bind_variable) ASSIGN_OP expression
     ;
 
 continue_statement
@@ -932,7 +936,7 @@ return_statement
     ;
 
 function_call
-    :    routine_name function_argument?
+    :    call_key? routine_name function_argument?
     ;
 
 body
@@ -999,9 +1003,10 @@ data_manipulation_language_statements
     :    merge_statement
     |    lock_table_statement
     |    select_statement
-    |     update_statement
-    |     delete_statement
+    |    update_statement
+    |    delete_statement
     |    insert_statement
+    |    explain_statement
     ;
 
 // $>
@@ -1016,7 +1021,7 @@ cursor_manipulation_statements
     ;
 
 close_statement
-    :     close_key variable_name 
+    :     close_key cursor_name
     ;
 
 open_statement
