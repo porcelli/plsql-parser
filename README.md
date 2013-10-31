@@ -45,3 +45,6 @@ Legal and Trademarks
 * PL/SQL is a trademark of Oracle Corporation.
 * Java is a trademark of Oracle Corporation.
 * ANTLR is a registered trademark of Terence Parr.
+
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/porcelli/plsql-parser/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+
