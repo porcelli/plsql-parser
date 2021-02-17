@@ -1,3 +1,8 @@
+Important Note!
+=====
+This project is not mantained anymore. But this grammar has been ported to antlr4 by community and available here: <https://github.com/antlr/grammars-v4/tree/master/sql/plsql>
+
+
 About
 =====
 
